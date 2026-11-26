@@ -1,4 +1,69 @@
 
+function decodeHtml(text = "") {
+  return text
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/<[^>]*>/g, "")
+    .trim();
+}
+
+async function searchNews(query) {
+  const url =
+    "https://news.google.com/rss/search?q=" +
+    encodeURIComponent(query) +
+    "&hl=de&gl=DE&ceid=DE:de";
+
+  const response = await fetch(url, {
+    headers: { "User-Agent": "JARVIS/1.0" }
+  });
+
+  if (!response.ok) throw new Error("News-Suche fehlgeschlagen");
+
+  const xml = await response.text();
+
+  return [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)]
+    .slice(0, 5)
+    .map(match => {
+      const item = match[1];
+      const get = tag =>
+        item.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`))
+          ? decodeHtml(
+              item.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`))[1]
+            )
+          : "";
+
+      return {
+        title: get("title"),
+        link: get("link"),
+        description: get("description")
+      };
+    })
+    .filter(item => item.title && item.link);
+}
+
+async function searchWikipedia(query) {
+  const url =
+    "https://de.wikipedia.org/w/api.php?action=query&list=search&srsearch=" +
+    encodeURIComponent(query) +
+    "&format=json&utf8=1";
+
+  const response = await fetch(url);
+  if (!response.ok) throw new Error("Wikipedia-Suche fehlgeschlagen");
+
+  const data = await response.json();
+
+  return (data.query?.search || []).slice(0, 4).map(item => ({
+    title: item.title,
+    description: decodeHtml(item.snippet),
+    link:
+      "https://de.wikipedia.org/wiki/" +
+      encodeURIComponent(item.title.replace(/ /g, "_"))
+  }));
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
@@ -48,6 +113,52 @@ export default async function handler(req, res) {
       }
     ];
 
+    const needsSearch =
+      /aktuell|heute|neueste|neuesten|news|nachrichten|recherch|internet|stand heute|2026|gestern/i
+        .test(message);
+
+    let research = "";
+    let sources = [];
+
+    if (needsSearch) {
+      const results = await Promise.allSettled([
+        searchNews(message),
+        searchWikipedia(message)
+      ]);
+
+      const news =
+        results[0].status === "fulfilled" ? results[0].value : [];
+
+      const wiki =
+        results[1].status === "fulfilled" ? results[1].value : [];
+
+      sources = [...news, ...wiki];
+
+      research = sources.map((item, index) =>
+        `${index + 1}. ${item.title}\n${item.description}\n${item.link}`
+      ).join("\n\n");
+
+      if (!research) {
+        research =
+          "Die externen Suchdienste haben gerade keine Ergebnisse geliefert.";
+      }
+    }
+
+    const finalContents = [...contents];
+
+    if (needsSearch) {
+      finalContents.push({
+        role: "user",
+        parts: [{
+          text:
+            "Zusätzliche Recherche-Ergebnisse:\n" +
+            research +
+            "\nNutze diese Informationen kritisch. Erfinde keine Fakten. " +
+            "Wenn keine Ergebnisse vorhanden sind, sage das offen."
+        }]
+      });
+    }
+
     const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",
       {
@@ -59,15 +170,14 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           system_instruction: {
             parts: [{
-              text: "Du bist JARVIS, ein intelligenter deutscher KI-Assistent. Nutze den Gesprächsverlauf. Bei aktuellen Fragen nutze Google Search. Erfinde keine Quellen oder Fakten. Erkläre deine Ergebnisse verständlich."
+              text:
+                "Du bist JARVIS, ein intelligenter deutscher KI-Assistent. " +
+                "Nutze den Gesprächsverlauf. Bei Recherchefragen verwende " +
+                "die bereitgestellten Suchergebnisse. Unterscheide aktuelle " +
+                "Informationen von älterem Wissen. Erfinde keine Quellen."
             }]
           },
-          contents,
-          tools: [
-            {
-              google_search: {}
-            }
-          ]
+          contents: finalContents
         })
       }
     );
@@ -80,9 +190,7 @@ export default async function handler(req, res) {
       });
     }
 
-    const candidate = data.candidates?.[0];
-
-    let reply = candidate?.content?.parts
+    const reply = data.candidates?.[0]?.content?.parts
       ?.map(part => part.text || "")
       .join("")
       .trim();
@@ -93,33 +201,20 @@ export default async function handler(req, res) {
       });
     }
 
-    const chunks =
-      candidate?.groundingMetadata?.groundingChunks || [];
-
-    const sources = chunks
-      .map(item => item.web)
-      .filter(item =>
-        item &&
-        typeof item.uri === "string" &&
-        item.uri.startsWith("https://")
-      );
-
     const uniqueSources = [
-      ...new Map(
-        sources.map(source => [source.uri, source])
-      ).values()
-    ].slice(0, 5);
+      ...new Map(sources.map(item => [item.link, item])).values()
+    ].slice(0, 6);
 
-    if (uniqueSources.length) {
-      reply += "\n\nQuellen:\n";
-      reply += uniqueSources
-        .map(source =>
-          `• ${source.title || "Quelle"}: ${source.uri}`
-        )
-        .join("\n");
-    }
+    const sourceText = uniqueSources.length
+      ? "\n\nQuellen:\n" +
+        uniqueSources.map(item =>
+          `• ${item.title}: ${item.link}`
+        ).join("\n")
+      : "";
 
-    return res.status(200).json({ reply });
+    return res.status(200).json({
+      reply: reply + sourceText
+    });
 
   } catch (error) {
     console.error("JARVIS:", error);
