@@ -1,9 +1,7 @@
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({
-      error: "Methode nicht erlaubt."
-    });
+    return res.status(405).json({ error: "Methode nicht erlaubt." });
   }
 
   try {
@@ -11,57 +9,71 @@ export default async function handler(req, res) {
     const { message } = req.body || {};
 
     if (!apiKey) {
-      return res.status(500).json({
-        error: "GEMINI_API_KEY fehlt in Vercel."
-      });
+      return res.status(500).json({ error: "API-Schlüssel fehlt." });
     }
 
     if (!message || typeof message !== "string") {
-      return res.status(400).json({
-        error: "Nachricht fehlt."
-      });
+      return res.status(400).json({ error: "Nachricht fehlt." });
     }
 
-    const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/interactions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey
-        },
-        body: JSON.stringify({
-          model: "gemini-3.8-flash",
-          input: message,
-          system_instruction:
-            "Du bist JARVIS, ein intelligenter deutscher KI-Assistent. Antworte hilfreich, natürlich und präzise. Du bist der persönliche Assistent des Besitzers. Nenne ihn Baran, wenn es passt.",
-          store: false
-        })
+    let lastError = "Google ist gerade nicht erreichbar.";
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+      if (attempt > 0) {
+        await new Promise(resolve =>
+          setTimeout(resolve, attempt * 3000)
+        );
       }
-    );
 
-    const data = await response.json();
+      try {
+        const response = await fetch(
+          "https://generativelanguage.googleapis.com/v1beta/interactions",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-goog-api-key": apiKey
+            },
+            body: JSON.stringify({
+              model: "gemini-3.8-flash",
+              input: message,
+              system_instruction:
+                "Du bist JARVIS, ein intelligenter deutscher KI-Assistent. Antworte hilfreich, natürlich und präzise. Nenne den Besitzer Baran, wenn es passt.",
+              store: false
+            })
+          }
+        );
 
-    if (!response.ok) {
-      console.error("Gemini Fehler:", data);
-      return res.status(response.status).json({
-        error: data.error?.message || "Gemini API Fehler."
-      });
+        const data = await response.json();
+
+        if (response.ok && data.output_text) {
+          return res.status(200).json({
+            reply: data.output_text
+          });
+        }
+
+        lastError =
+          data.error?.message || "Unbekannter Gemini-Fehler.";
+
+        const temporary =
+          [408, 429, 500, 502, 503, 504].includes(response.status);
+
+        if (!temporary) {
+          return res.status(response.status).json({
+            error: lastError
+          });
+        }
+
+      } catch (error) {
+        lastError = error.message;
+      }
     }
 
-    const reply = data.output_text;
-
-    if (!reply) {
-      return res.status(502).json({
-        error: "Gemini hat keinen Antworttext geliefert."
-      });
-    }
-
-    return res.status(200).json({ reply });
+    return res.status(503).json({
+      error: "Google ist weiterhin überlastet. Bitte versuche es später erneut. " + lastError
+    });
 
   } catch (error) {
-    console.error("JARVIS Fehler:", error);
-
     return res.status(500).json({
       error: "Serverfehler: " + error.message
     });
