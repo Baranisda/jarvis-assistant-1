@@ -8,16 +8,27 @@
 <title>JARVIS AI</title>
 
 <style>
-* {
-  box-sizing: border-box;
+:root {
+  --gold: #e7bd55;
+  --accent: #e7bd55;
+  --background: #050505;
+  --panel: #11100c;
 }
+
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background: radial-gradient(circle at top, #211900 0%, #090909 42%, #000 100%);
+  background: radial-gradient(circle at top, #211900, #090909 45%, #000);
   color: #f5d477;
   font-family: Arial, sans-serif;
+}
+
+body.blue {
+  --accent: #55c8e7;
+  --gold: #55c8e7;
+  background: radial-gradient(circle at top, #001c29, #090909 45%, #000);
 }
 
 header {
@@ -29,14 +40,30 @@ header h1 {
   margin: 0;
   font-size: 32px;
   letter-spacing: 8px;
-  text-shadow: 0 0 18px #d49b20;
+  color: var(--accent);
+  text-shadow: 0 0 18px var(--accent);
 }
 
 #status {
-  color: #b99a50;
+  color: var(--accent);
   font-size: 11px;
   letter-spacing: 3px;
   margin-top: 9px;
+}
+
+.top-actions {
+  position: absolute;
+  right: 15px;
+  top: 20px;
+}
+
+.top-actions button {
+  background: #17130a;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 18px;
 }
 
 .reactor-wrap {
@@ -48,12 +75,12 @@ header h1 {
 .reactor {
   width: 125px;
   height: 125px;
-  border: 3px solid #d6a52e;
+  border: 3px solid var(--accent);
   border-radius: 50%;
   display: grid;
   place-items: center;
   position: relative;
-  box-shadow: 0 0 20px #b78319, inset 0 0 20px #9b741e;
+  box-shadow: 0 0 20px var(--accent), inset 0 0 20px #9b741e;
   animation: pulse 3s infinite ease-in-out;
 }
 
@@ -61,7 +88,7 @@ header h1 {
 .reactor::after {
   content: "";
   position: absolute;
-  border: 2px solid #e8bd54;
+  border: 2px solid var(--accent);
   border-radius: 50%;
 }
 
@@ -84,29 +111,19 @@ header h1 {
 .core {
   width: 35px;
   height: 35px;
-  background: #ffe6a0;
+  background: #fff0bd;
   border-radius: 50%;
-  box-shadow: 0 0 25px #ffc52e, 0 0 50px #ffc52e;
+  box-shadow: 0 0 25px var(--accent), 0 0 50px var(--accent);
 }
 
-body.listening .reactor {
-  animation: pulse 0.8s infinite;
-}
+body.listening .reactor { animation: pulse .8s infinite; }
+body.thinking .reactor::before { animation-duration: .8s; }
+body.speaking .core { animation: pulse .5s infinite; }
 
-body.thinking .reactor::before {
-  animation-duration: 0.8s;
-}
-
-body.speaking .core {
-  animation: pulse 0.5s infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 0.85; }
+  0%,100% { transform: scale(1); opacity: .85; }
   50% { transform: scale(1.06); opacity: 1; }
 }
 
@@ -118,7 +135,7 @@ body.speaking .core {
 }
 
 .info div {
-  border: 1px solid #76591e;
+  border: 1px solid var(--accent);
   background: #100e08;
   border-radius: 10px;
   padding: 10px 8px;
@@ -131,7 +148,7 @@ body.speaking .core {
 
 .info strong {
   display: block;
-  color: #f5d477;
+  color: var(--accent);
   margin-bottom: 5px;
   font-size: 11px;
 }
@@ -148,10 +165,9 @@ main {
   max-height: 430px;
   overflow-y: auto;
   padding: 14px;
-  border: 1px solid #73551b;
+  border: 1px solid var(--accent);
   border-radius: 14px;
-  background: rgba(8, 8, 8, 0.88);
-  box-shadow: 0 0 18px #6c4c1522;
+  background: rgba(8,8,8,.9);
 }
 
 .message {
@@ -180,7 +196,7 @@ main {
 
 .message-label {
   display: block;
-  color: #d9ad45;
+  color: var(--accent);
   font-size: 10px;
   letter-spacing: 2px;
   margin-bottom: 6px;
@@ -192,25 +208,21 @@ main {
   margin-top: 12px;
 }
 
-input {
+input, select {
   min-width: 0;
-  flex: 1;
   background: #101010;
-  border: 1px solid #8a6825;
+  border: 1px solid var(--accent);
   border-radius: 10px;
-  padding: 14px;
+  padding: 13px;
   color: white;
-  font-size: 15px;
+  font-size: 14px;
   outline: none;
 }
 
-input:focus {
-  border-color: #f2c65d;
-  box-shadow: 0 0 10px #d39b2833;
-}
+.controls input { flex: 1; }
 
 button {
-  background: linear-gradient(135deg, #d7a52e, #795311);
+  background: linear-gradient(135deg, var(--accent), #795311);
   color: #100d05;
   border: none;
   border-radius: 10px;
@@ -219,12 +231,11 @@ button {
   cursor: pointer;
 }
 
-button:disabled {
-  opacity: 0.5;
-}
+button:disabled { opacity: .5; }
 
 .extra {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 10px;
 }
@@ -232,8 +243,8 @@ button:disabled {
 .extra button {
   flex: 1;
   background: #17130a;
-  color: #e8c66d;
-  border: 1px solid #76591e;
+  color: var(--accent);
+  border: 1px solid var(--accent);
   font-size: 12px;
 }
 
@@ -244,8 +255,106 @@ button:disabled {
   margin-top: 12px;
 }
 
-a {
-  color: #f2c65d;
+/* CONTROL CENTER */
+
+.settings-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: rgba(0,0,0,.8);
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.settings-overlay.open {
+  display: block;
+}
+
+.settings-panel {
+  width: min(500px, 100%);
+  margin: 30px auto;
+  background: #0c0c0c;
+  border: 1px solid var(--accent);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 0 30px #000;
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.settings-header h2 {
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: var(--accent);
+}
+
+.close {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 8px 12px;
+}
+
+.setting {
+  background: #15140f;
+  border: 1px solid #51401c;
+  border-radius: 12px;
+  padding: 14px;
+  margin: 12px 0;
+}
+
+.setting-title {
+  color: var(--accent);
+  font-weight: bold;
+  margin-bottom: 9px;
+}
+
+.setting p {
+  color: #a99a78;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.setting select {
+  width: 100%;
+}
+
+.setting input[type=range] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.setting button {
+  width: 100%;
+  margin-top: 7px;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.setting-row button {
+  width: auto;
+}
+
+#memoryCount {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+@media(max-width:400px) {
+  header h1 { font-size: 25px; }
+  .top-actions { top: 14px; right: 8px; }
+  .top-actions button { padding: 8px; }
 }
 </style>
 </head>
@@ -253,41 +362,30 @@ a {
 <body>
 
 <header>
+  <div class="top-actions">
+    <button onclick="openSettings()" aria-label="Einstellungen">⚙️</button>
+  </div>
   <h1>J.A.R.V.I.S.</h1>
   <div id="status">SYSTEM ONLINE</div>
 </header>
 
 <div class="reactor-wrap">
-  <div class="reactor">
-    <div class="core"></div>
-  </div>
+  <div class="reactor"><div class="core"></div></div>
 </div>
 
 <div class="info">
-  <div>
-    <strong>SYSTEM</strong>
-    ONLINE
-  </div>
-  <div>
-    <strong>MEMORY</strong>
-    ACTIVE
-  </div>
-  <div>
-    <strong>NETWORK</strong>
-    READY
-  </div>
+  <div><strong>SYSTEM</strong>ONLINE</div>
+  <div><strong>MEMORY</strong>ACTIVE</div>
+  <div><strong>NETWORK</strong>READY</div>
 </div>
 
 <main>
   <div class="chat" id="chat"></div>
 
   <div class="controls">
-    <input
-      id="message"
-      type="text"
+    <input id="message" type="text"
       placeholder="Sprich mit JARVIS..."
-      autocomplete="off"
-    >
+      autocomplete="off">
     <button id="sendButton" onclick="sendMessage()">SENDEN</button>
   </div>
 
@@ -298,10 +396,83 @@ a {
     <button onclick="clearMemory()">🗑 LÖSCHEN</button>
   </div>
 
-  <div class="hint">
-    JARVIS AI · PERSONAL ASSISTANT
-  </div>
+  <div class="hint">JARVIS AI · PERSONAL ASSISTANT</div>
 </main>
+
+<!-- EINSTELLUNGEN -->
+
+<div class="settings-overlay" id="settingsOverlay"
+  onclick="overlayClick(event)">
+
+  <div class="settings-panel">
+    <div class="settings-header">
+      <h2>JARVIS CONTROL CENTER</h2>
+      <button class="close" onclick="closeSettings()">✕</button>
+    </div>
+
+    <div class="setting">
+      <div class="setting-title">🔊 Sprachsteuerung</div>
+
+      <div class="setting-row">
+        <span>Sprachausgabe</span>
+        <button onclick="toggleVoice()" id="settingsVoiceButton">
+          AN
+        </button>
+      </div>
+
+      <p>Sprechgeschwindigkeit</p>
+      <input type="range" id="speedRange"
+        min="0.75" max="1.25" step="0.05"
+        oninput="changeSpeed(this.value)">
+
+      <p id="speedValue">Geschwindigkeit: 0.95</p>
+
+      <button onclick="testVoice()">Stimme testen</button>
+    </div>
+
+    <div class="setting">
+      <div class="setting-title">💬 Antwortstil</div>
+      <p>Wie ausführlich soll JARVIS antworten?</p>
+
+      <select id="replyMode" onchange="changeReplyMode(this.value)">
+        <option value="normal">Normal</option>
+        <option value="short">Kurz und direkt</option>
+        <option value="detailed">Ausführlich</option>
+      </select>
+    </div>
+
+    <div class="setting">
+      <div class="setting-title">🎨 Design</div>
+      <p>Wähle die Farbe deines JARVIS-Systems.</p>
+
+      <select id="themeSelect" onchange="changeTheme(this.value)">
+        <option value="gold">Iron Man Gold</option>
+        <option value="blue">Arc Reactor Blau</option>
+      </select>
+    </div>
+
+    <div class="setting">
+      <div class="setting-title">🧠 Gesprächsgedächtnis</div>
+      <p>Gespeicherte Nachrichten auf diesem Gerät:</p>
+      <div id="memoryCount">0 Nachrichten</div>
+      <p>Diese Daten liegen aktuell lokal in deinem Browser.</p>
+      <button onclick="clearMemory(); updateMemoryCount();">
+        Gesprächsgedächtnis löschen
+      </button>
+    </div>
+
+    <div class="setting">
+      <div class="setting-title">📡 Systemstatus</div>
+      <p>KI-Verbindung: <span style="color:#75d58b">Bereit</span></p>
+      <p>Spracheingabe: Browserabhängig</p>
+      <p>Cloud-Synchronisierung: Noch nicht eingerichtet</p>
+    </div>
+
+    <button style="width:100%" onclick="closeSettings()">
+      SCHLIESSEN
+    </button>
+  </div>
+</div>
 
 <script>
 const chat = document.getElementById("chat");
@@ -310,31 +481,61 @@ const statusText = document.getElementById("status");
 const sendButton = document.getElementById("sendButton");
 
 const MEMORY_KEY = "jarvis_conversation_v1";
+const SETTINGS_KEY = "jarvis_settings_v1";
 
 let history = [];
 let voiceEnabled = true;
+let speechRate = 0.95;
+let replyMode = "normal";
 let recognition = null;
 let isBusy = false;
 
-try {
-  history = JSON.parse(localStorage.getItem(MEMORY_KEY) || "[]");
-  if (!Array.isArray(history)) history = [];
-} catch {
-  history = [];
+function loadSettings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
+
+    voiceEnabled = saved.voiceEnabled !== false;
+    speechRate = saved.speechRate || 0.95;
+    replyMode = saved.replyMode || "normal";
+
+    if (saved.theme === "blue") {
+      document.body.classList.add("blue");
+    }
+
+    document.getElementById("speedRange").value = speechRate;
+    document.getElementById("speedValue").textContent =
+      "Geschwindigkeit: " + speechRate;
+
+    document.getElementById("replyMode").value = replyMode;
+    document.getElementById("themeSelect").value =
+      saved.theme || "gold";
+
+    updateVoiceButtons();
+  } catch (error) {
+    console.error("Einstellungen konnten nicht geladen werden.");
+  }
 }
 
-// Text für die Anzeige und die Stimme bereinigen
+function saveSettings() {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify({
+    voiceEnabled,
+    speechRate,
+    replyMode,
+    theme: document.body.classList.contains("blue") ? "blue" : "gold"
+  }));
+}
+
 function cleanText(text) {
-  return String(text)
+  return String(text || "")
     .replace(/```[\s\S]*?```/g, " Code wurde ausgelassen. ")
     .replace(/`([^`]*)`/g, "$1")
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-    .replace(/https?:\/\/\S+/g, " Link in der Antwort. ")
     .replace(/^#{1,6}\s*/gm, "")
     .replace(/(\*\*|__)(.*?)\1/g, "$2")
     .replace(/[*_~]/g, "")
     .replace(/^\s*[-•]\s*/gm, "")
     .replace(/^\s*\d+\.\s*/gm, "")
+    .replace(/https?:\/\/\S+/g, " Link in der Antwort. ")
     .replace(/[>#|]/g, " ")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
@@ -342,13 +543,12 @@ function cleanText(text) {
 
 function setStatus(status, className = "") {
   statusText.textContent = status;
+
   document.body.classList.remove(
     "listening", "thinking", "speaking"
   );
 
-  if (className) {
-    document.body.classList.add(className);
-  }
+  if (className) document.body.classList.add(className);
 }
 
 function addMessage(role, text) {
@@ -377,41 +577,49 @@ function saveMemory() {
   } catch (error) {
     console.error("Speichern fehlgeschlagen:", error);
   }
+
+  updateMemoryCount();
+}
+
+function updateMemoryCount() {
+  document.getElementById("memoryCount").textContent =
+    history.length + " Nachrichten";
 }
 
 function loadMemory() {
+  try {
+    history = JSON.parse(localStorage.getItem(MEMORY_KEY) || "[]");
+    if (!Array.isArray(history)) history = [];
+  } catch {
+    history = [];
+  }
+
   chat.innerHTML = "";
 
   if (history.length === 0) {
-    addMessage(
-      "jarvis",
-      "Guten Abend. JARVIS ist online. Wie kann ich Ihnen helfen?"
-    );
-    return;
+    addMessage("jarvis",
+      "Guten Tag. JARVIS ist online. Wie kann ich Ihnen helfen?");
+  } else {
+    history.forEach(item => {
+      addMessage(
+        item.role === "user" ? "user" : "jarvis",
+        item.parts?.[0]?.text || ""
+      );
+    });
   }
 
-  history.forEach(item => {
-    addMessage(
-      item.role === "user" ? "user" : "jarvis",
-      item.parts?.[0]?.text || item.text || ""
-    );
-  });
+  updateMemoryCount();
 }
 
 function getGermanVoice() {
   const voices = speechSynthesis.getVoices();
-
-  const germanVoices = voices.filter(voice =>
-    voice.lang.toLowerCase().startsWith("de")
+  const german = voices.filter(v =>
+    v.lang.toLowerCase().startsWith("de")
   );
 
-  return (
-    germanVoices.find(voice =>
-      /google|microsoft|natural/i.test(voice.name)
-    ) ||
-    germanVoices[0] ||
-    null
-  );
+  return german.find(v =>
+    /google|microsoft|natural/i.test(v.name)
+  ) || german[0] || null;
 }
 
 function speak(text) {
@@ -422,29 +630,24 @@ function speak(text) {
 
   speechSynthesis.cancel();
 
-  // Lange Antworten in kleinere Abschnitte teilen
   const sentences = clean.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [clean];
-
-  const voice = getGermanVoice();
 
   sentences.forEach(sentence => {
     const part = sentence.trim();
     if (!part) return;
 
     const utterance = new SpeechSynthesisUtterance(part);
-
     utterance.lang = "de-DE";
-    utterance.voice = voice;
-    utterance.rate = 0.95;
+    utterance.voice = getGermanVoice();
+    utterance.rate = speechRate;
     utterance.pitch = 0.98;
     utterance.volume = 1;
 
-    utterance.onstart = () => setStatus("JARVIS SPRICHT", "speaking");
+    utterance.onstart = () =>
+      setStatus("JARVIS SPRICHT", "speaking");
 
     utterance.onend = () => {
-      if (!speechSynthesis.speaking) {
-        setStatus("SYSTEM ONLINE");
-      }
+      if (!speechSynthesis.speaking) setStatus("SYSTEM ONLINE");
     };
 
     utterance.onerror = () => setStatus("SYSTEM ONLINE");
@@ -453,21 +656,62 @@ function speak(text) {
   });
 }
 
-function stopSpeaking() {
-  if ("speechSynthesis" in window) {
-    speechSynthesis.cancel();
-  }
+function updateVoiceButtons() {
+  const label = voiceEnabled ? "🔊 STIMME AN" : "🔇 STIMME AUS";
 
-  setStatus("SYSTEM ONLINE");
+  document.getElementById("voiceButton").textContent = label;
+  document.getElementById("settingsVoiceButton").textContent =
+    voiceEnabled ? "AN" : "AUS";
 }
 
 function toggleVoice() {
   voiceEnabled = !voiceEnabled;
 
-  document.getElementById("voiceButton").textContent =
-    voiceEnabled ? "🔊 STIMME AN" : "🔇 STIMME AUS";
-
   if (!voiceEnabled) stopSpeaking();
+
+  updateVoiceButtons();
+  saveSettings();
+}
+
+function stopSpeaking() {
+  if ("speechSynthesis" in window) speechSynthesis.cancel();
+  setStatus("SYSTEM ONLINE");
+}
+
+function changeSpeed(value) {
+  speechRate = Number(value);
+
+  document.getElementById("speedValue").textContent =
+    "Geschwindigkeit: " + speechRate.toFixed(2);
+
+  saveSettings();
+}
+
+function changeReplyMode(value) {
+  replyMode = value;
+  saveSettings();
+}
+
+function changeTheme(value) {
+  document.body.classList.toggle("blue", value === "blue");
+  saveSettings();
+}
+
+function testVoice() {
+  speak("Guten Tag. JARVIS Sprachsystem ist einsatzbereit.");
+}
+
+function openSettings() {
+  document.getElementById("settingsOverlay").classList.add("open");
+  updateMemoryCount();
+}
+
+function closeSettings() {
+  document.getElementById("settingsOverlay").classList.remove("open");
+}
+
+function overlayClick(event) {
+  if (event.target.id === "settingsOverlay") closeSettings();
 }
 
 async function sendMessage() {
@@ -480,7 +724,6 @@ async function sendMessage() {
   input.value = "";
 
   stopSpeaking();
-
   addMessage("user", message);
 
   const previousHistory = history.slice(-12);
@@ -493,14 +736,20 @@ async function sendMessage() {
   saveMemory();
   setStatus("JARVIS DENKT", "thinking");
 
+  let prompt = message;
+
+  if (replyMode === "short") {
+    prompt += "\n\nBitte antworte kurz und direkt.";
+  } else if (replyMode === "detailed") {
+    prompt += "\n\nBitte antworte ausführlich und erkläre die Zusammenhänge.";
+  }
+
   try {
     const response = await fetch("/api/chat", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        message: message,
+        message: prompt,
         history: previousHistory
       })
     });
@@ -514,7 +763,7 @@ async function sendMessage() {
     const reply = data.reply || data.text;
 
     if (!reply || typeof reply !== "string") {
-      throw new Error("JARVIS hat keine lesbare Antwort geliefert.");
+      throw new Error("Keine lesbare Antwort erhalten.");
     }
 
     addMessage("jarvis", reply);
@@ -525,20 +774,15 @@ async function sendMessage() {
     });
 
     saveMemory();
-
     speak(reply);
 
-    if (!voiceEnabled) {
-      setStatus("SYSTEM ONLINE");
-    }
+    if (!voiceEnabled) setStatus("SYSTEM ONLINE");
 
   } catch (error) {
     console.error(error);
 
-    addMessage(
-      "jarvis",
-      "Entschuldigung, ich kann gerade keine Verbindung zu meinem KI-System herstellen. Bitte versuche es erneut."
-    );
+    addMessage("jarvis",
+      "Entschuldigung, ich kann gerade keine Verbindung zu meinem KI-System herstellen. Bitte versuche es erneut.");
 
     setStatus("CONNECTION ERROR");
   } finally {
@@ -566,35 +810,27 @@ function startListening() {
     window.webkitSpeechRecognition;
 
   if (!SpeechRecognition) {
-    addMessage(
-      "jarvis",
-      "Die Spracheingabe wird von diesem Browser leider nicht unterstützt."
-    );
+    addMessage("jarvis",
+      "Die Spracheingabe wird von diesem Browser nicht unterstützt.");
     return;
   }
 
-  if (recognition) {
-    recognition.stop();
-  }
+  if (recognition) recognition.stop();
 
   recognition = new SpeechRecognition();
   recognition.lang = "de-DE";
   recognition.continuous = false;
   recognition.interimResults = false;
 
-  recognition.onstart = () => {
+  recognition.onstart = () =>
     setStatus("ICH HÖRE ZU", "listening");
-  };
 
   recognition.onresult = event => {
-    const spokenText = event.results[0][0].transcript;
-    input.value = spokenText;
+    input.value = event.results[0][0].transcript;
     sendMessage();
   };
 
-  recognition.onerror = () => {
-    setStatus("SPRACHFEHLER");
-  };
+  recognition.onerror = () => setStatus("SPRACHFEHLER");
 
   recognition.onend = () => {
     if (!isBusy) setStatus("SYSTEM ONLINE");
@@ -604,17 +840,14 @@ function startListening() {
 }
 
 input.addEventListener("keydown", event => {
-  if (event.key === "Enter") {
-    sendMessage();
-  }
+  if (event.key === "Enter") sendMessage();
 });
 
 if ("speechSynthesis" in window) {
-  speechSynthesis.onvoiceschanged = () => {
-    getGermanVoice();
-  };
+  speechSynthesis.onvoiceschanged = () => getGermanVoice();
 }
 
+loadSettings();
 loadMemory();
 </script>
 
