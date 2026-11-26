@@ -3,8 +3,8 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JARVIS AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>J.A.R.V.I.S.</title>
 
 <style>
 * { box-sizing: border-box; }
@@ -24,21 +24,21 @@ header {
   width: 100%;
   padding: 22px;
   text-align: center;
-  border-bottom: 1px solid #6f551b;
+  border-bottom: 1px solid #70551c;
   letter-spacing: 5px;
   font-size: 24px;
 }
 
 .reactor {
-  width: 145px;
-  height: 145px;
-  margin: 35px auto 15px;
+  width: 130px;
+  height: 130px;
+  margin: 30px auto 15px;
   border: 5px solid #d5a82f;
   border-radius: 50%;
-  box-shadow: 0 0 20px #c99520, inset 0 0 20px #c99520;
+  box-shadow: 0 0 25px #c99520, inset 0 0 20px #c99520;
   display: grid;
   place-items: center;
-  font-size: 55px;
+  font-size: 52px;
   animation: glow 2s infinite alternate;
 }
 
@@ -50,7 +50,7 @@ header {
 #status {
   color: #aaa;
   font-size: 13px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 #chat {
@@ -68,6 +68,7 @@ header {
   margin: 12px 0;
   line-height: 1.5;
   overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
 .user { color: white; }
@@ -98,19 +99,19 @@ button {
   color: black;
   border: none;
   border-radius: 8px;
-  padding: 12px 16px;
+  padding: 12px 15px;
   font-weight: bold;
   cursor: pointer;
 }
 
-button:disabled {
-  opacity: .5;
-}
+button:disabled { opacity: .5; }
 
 .options {
   display: flex;
   gap: 10px;
   margin: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 footer {
@@ -126,26 +127,22 @@ footer {
 <header>J.A.R.V.I.S.</header>
 
 <div class="reactor">J</div>
+<div id="status">SYSTEM ONLINE</div>
 
-<div id="status">SYSTEM WIRD GESTARTET...</div>
-
-<div id="chat">
-  <div class="message jarvis">
-    JARVIS: Guten Abend. Ich bin bereit.
-  </div>
-</div>
+<div id="chat"></div>
 
 <div class="controls">
-  <input id="message" placeholder="Nachricht an JARVIS..." />
+  <input id="message" placeholder="Nachricht an JARVIS...">
   <button id="send" onclick="sendMessage()">SENDEN</button>
 </div>
 
 <div class="options">
   <button onclick="startMic()">🎙️ Mikrofon</button>
   <button onclick="toggleVoice()" id="voiceBtn">🔊 Stimme AN</button>
+  <button onclick="clearMemory()">🗑️ Verlauf löschen</button>
 </div>
 
-<footer>JARVIS PERSONAL AI SYSTEM</footer>
+<footer>JARVIS PERSONAL AI SYSTEM · MEMORY ACTIVE</footer>
 
 <script>
 const chat = document.getElementById("chat");
@@ -153,7 +150,37 @@ const input = document.getElementById("message");
 const statusText = document.getElementById("status");
 const sendButton = document.getElementById("send");
 
+const STORAGE_KEY = "jarvis_conversation_v1";
+
 let voiceEnabled = true;
+let history = [];
+
+try {
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+
+  if (Array.isArray(saved)) {
+    history = saved
+      .filter(item =>
+        item &&
+        ["user", "model"].includes(item.role) &&
+        typeof item.text === "string"
+      )
+      .slice(-12);
+  }
+} catch {
+  history = [];
+}
+
+function saveMemory() {
+  try {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(history.slice(-12))
+    );
+  } catch {
+    statusText.textContent = "SPEICHER NICHT VERFÜGBAR";
+  }
+}
 
 function addMessage(text, type) {
   const div = document.createElement("div");
@@ -162,6 +189,22 @@ function addMessage(text, type) {
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
   return div;
+}
+
+function displayHistory() {
+  chat.innerHTML = "";
+
+  addMessage(
+    "JARVIS: Guten Tag. Ich bin bereit. Ich kann mich an deinen gespeicherten Gesprächsverlauf erinnern.",
+    "jarvis"
+  );
+
+  for (const item of history) {
+    addMessage(
+      (item.role === "user" ? "DU: " : "JARVIS: ") + item.text,
+      item.role === "user" ? "user" : "jarvis"
+    );
+  }
 }
 
 function speak(text) {
@@ -179,19 +222,24 @@ function speak(text) {
 
 function toggleVoice() {
   voiceEnabled = !voiceEnabled;
+
   document.getElementById("voiceBtn").textContent =
     voiceEnabled ? "🔊 Stimme AN" : "🔇 Stimme AUS";
 
-  if (!voiceEnabled) window.speechSynthesis.cancel();
+  if (!voiceEnabled) {
+    window.speechSynthesis.cancel();
+  }
 }
 
 async function sendMessage() {
   const message = input.value.trim();
 
-  if (!message) return;
+  if (!message || sendButton.disabled) return;
 
   addMessage("DU: " + message, "user");
   input.value = "";
+
+  const previousHistory = history.slice(-12);
 
   sendButton.disabled = true;
   statusText.textContent = "JARVIS DENKT...";
@@ -204,7 +252,10 @@ async function sendMessage() {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ message })
+      body: JSON.stringify({
+        message,
+        history: previousHistory
+      })
     });
 
     const data = await response.json();
@@ -214,12 +265,21 @@ async function sendMessage() {
     }
 
     if (!data.reply) {
-      throw new Error("Der Server hat keine Antwort geliefert.");
+      throw new Error("Keine Antwort erhalten.");
     }
 
     waiting.textContent = "JARVIS: " + data.reply;
+
+    history = [
+      ...previousHistory,
+      { role: "user", text: message },
+      { role: "model", text: data.reply }
+    ].slice(-12);
+
+    saveMemory();
     speak(data.reply);
-    statusText.textContent = "SYSTEM ONLINE";
+
+    statusText.textContent = "SYSTEM ONLINE · MEMORY ACTIVE";
 
   } catch (error) {
     waiting.className = "message error";
@@ -230,7 +290,19 @@ async function sendMessage() {
   }
 }
 
-input.addEventListener("keydown", function(event) {
+function clearMemory() {
+  if (!confirm("Möchtest du deinen gespeicherten Gesprächsverlauf löschen?")) {
+    return;
+  }
+
+  history = [];
+  localStorage.removeItem(STORAGE_KEY);
+  displayHistory();
+
+  statusText.textContent = "GEDÄCHTNIS GELÖSCHT";
+}
+
+input.addEventListener("keydown", event => {
   if (event.key === "Enter") sendMessage();
 });
 
@@ -240,7 +312,7 @@ function startMic() {
     window.webkitSpeechRecognition;
 
   if (!Recognition) {
-    addMessage("JARVIS: Spracheingabe wird in diesem Browser nicht unterstützt.", "error");
+    addMessage("JARVIS: Spracheingabe wird nicht unterstützt.", "error");
     return;
   }
 
@@ -250,16 +322,16 @@ function startMic() {
 
   statusText.textContent = "ICH HÖRE ZU...";
 
-  recognition.onresult = function(event) {
+  recognition.onresult = event => {
     input.value = event.results[0][0].transcript;
     sendMessage();
   };
 
-  recognition.onerror = function(event) {
+  recognition.onerror = event => {
     statusText.textContent = "MIKROFONFEHLER: " + event.error;
   };
 
-  recognition.onend = function() {
+  recognition.onend = () => {
     if (statusText.textContent === "ICH HÖRE ZU...") {
       statusText.textContent = "SYSTEM ONLINE";
     }
@@ -268,7 +340,8 @@ function startMic() {
   recognition.start();
 }
 
-statusText.textContent = "SYSTEM ONLINE";
+displayHistory();
+statusText.textContent = "SYSTEM ONLINE · MEMORY ACTIVE";
 </script>
 
 </body>
