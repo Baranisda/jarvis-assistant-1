@@ -6,80 +6,65 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#090a0d">
 <title>JARVIS Control Center</title>
-
 <style>
-:root {
-  --accent:#d6ad55;
-  --glow:rgba(214,173,85,.22);
-  --bg:#090a0d;
-  --panel:#111319;
-  --panel2:#171a22;
-  --text:#f2f3f5;
-  --muted:#858b99;
-  --border:rgba(255,255,255,.09);
-  --radius:20px;
+:root{
+ --accent:#d6ad55;--glow:rgba(214,173,85,.22);
+ --listen:#55aaff;--bg:#090a0d;--panel:#111319;
+ --panel2:#171a22;--text:#f2f3f5;--muted:#858b99;
+ --border:rgba(255,255,255,.09);
 }
 *{box-sizing:border-box}
-body{
-  margin:0;background:var(--bg);color:var(--text);
-  font-family:Arial,Helvetica,sans-serif;min-height:100vh;
-  transition:background .3s,color .3s;
-}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif;min-height:100vh}
 body[data-bg="blue"]{background:radial-gradient(ellipse at top,#101c31,#080a10 65%)}
 body[data-bg="space"]{background:radial-gradient(ellipse at 20% 0%,#24203c,#090a10 65%)}
 body[data-bg="black"]{background:#070809}
 body[data-bg="gradient"]{background:linear-gradient(145deg,#10121c,#17101b,#080a0e)}
 body.no-motion *{animation:none!important;transition:none!important}
-button,input,select,textarea{font:inherit}
+button,input,select{font:inherit}
 button{cursor:pointer}
 .app{max-width:1100px;margin:auto;padding:20px}
 header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px}
 .brand{display:flex;align-items:center;gap:12px}
-.brand-icon{
- width:42px;height:42px;border:1px solid var(--accent);
- border-radius:14px;display:grid;place-items:center;
- color:var(--accent);font-size:21px;box-shadow:0 0 25px var(--glow)
-}
+.brand-icon{width:42px;height:42px;border:1px solid var(--accent);border-radius:14px;display:grid;place-items:center;color:var(--accent);font-size:21px;box-shadow:0 0 25px var(--glow)}
 .brand h1{font-size:19px;letter-spacing:3px;margin:0}
 .brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:2px;margin-top:5px}
 .header-right{display:flex;align-items:center;gap:9px}
 .status{font-size:11px;color:var(--muted)}
 .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#48d69a;margin-right:6px}
-.icon-btn,.secondary,.primary{
- border:1px solid var(--border);border-radius:12px;padding:11px 14px;
- background:var(--panel2);color:var(--text)
-}
-.icon-btn{font-size:17px}
+.icon-btn,.secondary,.primary{border:1px solid var(--border);border-radius:12px;padding:11px 14px;background:var(--panel2);color:var(--text)}
 .primary{background:var(--accent);color:#111;border:0;font-weight:bold}
-.secondary:hover,.icon-btn:hover{border-color:var(--accent)}
-.panel{
- background:var(--panel);border:1px solid var(--border);
- border-radius:var(--radius);padding:17px;
-}
-.hero{
- display:grid;grid-template-columns:1.2fr .8fr;gap:15px;margin-bottom:15px
-}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:17px}
+.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:15px;margin-bottom:15px}
 .hero-main{min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.reactor{
- width:112px;height:112px;border-radius:50%;border:1px solid var(--accent);
- display:grid;place-items:center;position:relative;margin-bottom:14px;
- box-shadow:0 0 35px var(--glow),inset 0 0 25px var(--glow)
-}
-.reactor:before,.reactor:after{
- content:"";position:absolute;inset:9px;border:1px solid var(--accent);
- border-radius:50%;opacity:.55;animation:spin 12s linear infinite
-}
+.reactor{width:112px;height:112px;border-radius:50%;border:1px solid var(--accent);display:grid;place-items:center;position:relative;margin-bottom:14px;box-shadow:0 0 35px var(--glow),inset 0 0 25px var(--glow)}
+.reactor:before,.reactor:after{content:"";position:absolute;inset:9px;border:1px solid var(--accent);border-radius:50%;opacity:.55;animation:spin 12s linear infinite}
 .reactor:after{inset:-7px;border-style:dashed;opacity:.25;animation:spin 22s linear infinite reverse}
 .reactor span{font-size:29px;color:var(--accent)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .hero-main h2{font-size:17px;letter-spacing:3px;margin:0 0 6px}
 .hero-main p{font-size:12px;color:var(--muted);margin:0}
-.visualizer{height:42px;display:flex;align-items:center;justify-content:center;gap:4px;margin-top:13px}
-.visualizer i{display:block;width:3px;height:7px;border-radius:5px;background:var(--accent);opacity:.65}
-.visualizer.active i{animation:wave .7s ease-in-out infinite alternate}
-.visualizer.active i:nth-child(3n){animation-delay:.15s}
-.visualizer.active i:nth-child(2n){animation-delay:.3s}
-@keyframes wave{to{height:34px;opacity:1}}
+
+/* NEUER AUDIO-VISUALIZER */
+.visualizer{
+ height:58px;width:min(290px,90%);display:flex;align-items:center;
+ justify-content:center;gap:4px;margin-top:12px;
+ position:relative;overflow:hidden;
+}
+.visualizer i{
+ display:block;width:4px;height:5px;border-radius:8px;
+ background:var(--accent);opacity:.45;
+ transform:scaleY(.5);
+ transition:background .2s,opacity .2s;
+}
+.visualizer.idle i{animation:idleWave 2.4s ease-in-out infinite alternate}
+.visualizer.speaking i{background:var(--accent);opacity:1;animation:speakWave .48s ease-in-out infinite alternate}
+.visualizer.listening i{background:var(--listen);opacity:1;animation:listenWave .32s ease-in-out infinite alternate}
+.visualizer i:nth-child(3n){animation-delay:.12s}
+.visualizer i:nth-child(3n+1){animation-delay:.24s}
+.visualizer i:nth-child(4n){animation-delay:.08s}
+@keyframes idleWave{from{height:4px;opacity:.25}to{height:12px;opacity:.65}}
+@keyframes speakWave{from{height:7px;transform:scaleY(.6)}to{height:45px;transform:scaleY(1)}}
+@keyframes listenWave{from{height:5px;transform:scaleY(.5)}to{height:49px;transform:scaleY(1)}}
 .hero-side{display:flex;flex-direction:column;justify-content:space-between;gap:12px}
 .clock{font-size:32px;font-weight:300;letter-spacing:2px}
 .date{font-size:12px;color:var(--muted);margin-top:5px}
@@ -98,11 +83,7 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px;ma
 .message.jarvis{align-self:flex-start;background:var(--panel2);border:1px solid var(--border);border-bottom-left-radius:4px}
 .message .who{font-size:9px;letter-spacing:1.5px;opacity:.65;margin-bottom:5px}
 .chat-input{display:flex;gap:8px;margin-top:10px}
-.chat-input input,.field input,.field select,.field textarea{
- width:100%;min-width:0;background:var(--panel2);color:var(--text);
- border:1px solid var(--border);border-radius:12px;padding:13px;outline:none
-}
-.chat-input input:focus,.field input:focus,.field select:focus{border-color:var(--accent)}
+.chat-input input,.field input,.field select{width:100%;min-width:0;background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:13px;outline:none}
 .chat-input button{min-width:48px}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .actions button{font-size:12px}
@@ -119,7 +100,6 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px;ma
 .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
 .field{display:flex;flex-direction:column;gap:7px;margin-bottom:13px}
 .field label{font-size:11px;color:var(--muted);letter-spacing:1px}
-.field select{appearance:auto}
 .field input[type=range]{padding:0;accent-color:var(--accent)}
 .swatches{display:flex;gap:9px;flex-wrap:wrap}
 .swatch{width:31px;height:31px;border-radius:50%;border:2px solid transparent;outline:1px solid var(--border)}
@@ -128,30 +108,19 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px;ma
 .toggle-row input{accent-color:var(--accent);width:18px;height:18px}
 .footer{text-align:center;color:var(--muted);font-size:10px;padding:22px}
 @media(max-width:700px){
- .app{padding:13px}
- .hero{grid-template-columns:1fr}
- .hero-main{min-height:190px}
- .hero-side{display:grid;grid-template-columns:1fr 1fr}
+ .app{padding:13px}.hero{grid-template-columns:1fr}
+ .hero-main{min-height:190px}.hero-side{display:grid;grid-template-columns:1fr 1fr}
  .grid-stats{grid-template-columns:repeat(3,1fr)}
- .bottom-grid{grid-template-columns:1fr}
- .settings-grid{grid-template-columns:1fr}
- .brand h1{font-size:16px}
- .status{display:none}
+ .bottom-grid,.settings-grid{grid-template-columns:1fr}
+ .brand h1{font-size:16px}.status{display:none}
 }
 </style>
 </head>
-
 <body data-bg="black">
 <div class="app">
 <header>
- <div class="brand">
-  <div class="brand-icon">◈</div>
-  <div><h1>J.A.R.V.I.S.</h1><small>PERSONAL CONTROL SYSTEM</small></div>
- </div>
- <div class="header-right">
-  <span class="status"><span class="dot" id="onlineDot"></span><span id="onlineText">ONLINE</span></span>
-  <button class="icon-btn" id="settingsButton" title="Einstellungen">⚙</button>
- </div>
+ <div class="brand"><div class="brand-icon">◈</div><div><h1>J.A.R.V.I.S.</h1><small>PERSONAL CONTROL SYSTEM</small></div></div>
+ <div class="header-right"><span class="status"><span class="dot" id="onlineDot"></span><span id="onlineText">ONLINE</span></span><button class="icon-btn" id="settingsButton">⚙</button></div>
 </header>
 
 <section class="hero">
@@ -159,15 +128,11 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px;ma
   <div class="reactor"><span>◈</span></div>
   <h2 id="systemGreeting">SYSTEM BEREIT</h2>
   <p id="systemSub">Warte auf Anweisung</p>
-  <div class="visualizer" id="visualizer"></div>
+  <div class="visualizer idle" id="visualizer"></div>
  </div>
  <div class="panel hero-side">
   <div><div class="stat-label">Lokale Zeit</div><div class="clock" id="clock">--:--:--</div><div class="date" id="date">---</div></div>
-  <div>
-   <div class="stat-label">Akku</div>
-   <div class="stat-value" id="batteryText">Wird geprüft …</div>
-   <div class="battery-line"><div class="battery-fill" id="batteryFill"></div></div>
-  </div>
+  <div><div class="stat-label">Akku</div><div class="stat-value" id="batteryText">Wird geprüft …</div><div class="battery-line"><div class="battery-fill" id="batteryFill"></div></div></div>
   <div><div class="stat-label">Verbindung</div><div class="stat-value" id="connectionText">Wird geprüft …</div></div>
  </div>
 </section>
@@ -180,27 +145,19 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px;ma
 
 <section class="panel chat-panel">
  <div class="section-title">KOMMUNIKATION</div>
- <div class="chat-log" id="chatLog">
-  <div class="message jarvis"><div class="who">JARVIS</div>System bereit. Wie kann ich helfen?</div>
- </div>
+ <div class="chat-log" id="chatLog"></div>
  <div class="chat-input">
   <input id="messageInput" placeholder="Schreib JARVIS eine Nachricht …" autocomplete="off">
-  <button class="icon-btn" id="micButton" title="Mikrofon">🎙</button>
+  <button class="icon-btn" id="micButton">🎙</button>
   <button class="primary" id="sendButton">➤</button>
  </div>
- <div class="actions">
-  <button class="secondary" id="stopSpeech">◼ Sprache stoppen</button>
-  <button class="secondary" id="clearChat">Verlauf löschen</button>
- </div>
+ <div class="actions"><button class="secondary" id="stopSpeech">◼ Sprache stoppen</button><button class="secondary" id="clearChat">Verlauf löschen</button></div>
 </section>
 
 <section class="bottom-grid">
  <div class="panel">
   <div class="section-title">AUFGABENMANAGER</div>
-  <div class="task-add">
-   <input id="taskInput" placeholder="Neue Aufgabe …">
-   <button class="primary" id="addTask">+</button>
-  </div>
+  <div class="task-add"><input id="taskInput" placeholder="Neue Aufgabe …"><button class="primary" id="addTask">+</button></div>
   <div class="task-list" id="taskList"></div>
  </div>
  <div class="panel">
@@ -216,61 +173,16 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px;ma
  <div class="section-title">CONTROL CENTER · PERSONALISIERUNG</div>
  <div class="settings-grid">
   <div>
-   <div class="field">
-    <label>AKZENTFARBE</label>
-    <div class="swatches" id="swatches"></div>
-   </div>
-   <div class="field">
-    <label>HINTERGRUND</label>
-    <select id="backgroundSelect">
-     <option value="black">Tiefschwarz</option>
-     <option value="blue">Nachtblau</option>
-     <option value="space">Weltraum</option>
-     <option value="gradient">Farbverlauf</option>
-    </select>
-   </div>
-   <div class="field">
-    <label>OBERFLÄCHENSTIL</label>
-    <select id="surfaceSelect">
-     <option value="normal">Clean</option>
-     <option value="glass">Glassmorphism</option>
-     <option value="compact">Kompakt</option>
-    </select>
-   </div>
-   <div class="field">
-    <label>AUDIO-ANIMATION</label>
-    <select id="visualSelect">
-     <option value="bars">Equalizer</option>
-     <option value="pulse">Pulsieren</option>
-     <option value="wave">Wellen</option>
-    </select>
-   </div>
+   <div class="field"><label>AKZENTFARBE</label><div class="swatches" id="swatches"></div></div>
+   <div class="field"><label>HINTERGRUND</label><select id="backgroundSelect"><option value="black">Tiefschwarz</option><option value="blue">Nachtblau</option><option value="space">Weltraum</option><option value="gradient">Farbverlauf</option></select></div>
+   <div class="field"><label>OBERFLÄCHENSTIL</label><select id="surfaceSelect"><option value="normal">Clean</option><option value="glass">Glassmorphism</option><option value="compact">Kompakt</option></select></div>
+   <div class="field"><label>AUDIO-ANIMATION</label><select id="visualSelect"><option value="bars">Equalizer</option><option value="pulse">Pulsieren</option><option value="wave">Wellen</option></select></div>
   </div>
   <div>
-   <div class="field">
-    <label>SPRACHSTIMME</label>
-    <select id="voiceSelect"><option value="">Automatische deutsche Stimme</option></select>
-   </div>
-   <div class="field">
-    <label>SPRECHGESCHWINDIGKEIT · <span id="speedValue">1.0</span></label>
-    <input type="range" id="speedRange" min=".75" max="1.25" step=".05" value="1">
-   </div>
-   <div class="field">
-    <label>ANTWORTLÄNGE</label>
-    <select id="answerStyle">
-     <option value="normal">Normal</option>
-     <option value="short">Kurz</option>
-     <option value="detailed">Ausführlich</option>
-    </select>
-   </div>
-   <div class="field">
-    <label>SCHRIFTGRÖSSE</label>
-    <select id="fontSize">
-     <option value="14">Normal</option>
-     <option value="15">Groß</option>
-     <option value="13">Klein</option>
-    </select>
-   </div>
+   <div class="field"><label>SPRACHSTIMME</label><select id="voiceSelect"><option value="">Automatische deutsche Stimme</option></select></div>
+   <div class="field"><label>SPRECHGESCHWINDIGKEIT · <span id="speedValue">1.0</span></label><input type="range" id="speedRange" min=".75" max="1.25" step=".05" value="1"></div>
+   <div class="field"><label>ANTWORTLÄNGE</label><select id="answerStyle"><option value="normal">Normal</option><option value="short">Kurz</option><option value="detailed">Ausführlich</option></select></div>
+   <div class="field"><label>SCHRIFTGRÖSSE</label><select id="fontSize"><option value="14">Normal</option><option value="15">Groß</option><option value="13">Klein</option></select></div>
   </div>
  </div>
  <div class="section-title" style="margin-top:12px">SYSTEMSCHALTER</div>
@@ -278,59 +190,37 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px;ma
  <div class="toggle-row"><span>Animationen aktivieren</span><input type="checkbox" id="motionToggle" checked></div>
  <div class="toggle-row"><span>Soundeffekte</span><input type="checkbox" id="soundToggle"></div>
  <div class="toggle-row"><span>Reaktor anzeigen</span><input type="checkbox" id="reactorToggle" checked></div>
- <div class="actions">
-  <button class="secondary" id="resetSettings">Design zurücksetzen</button>
-  <button class="secondary" id="closeSettings">Schließen</button>
- </div>
+ <div class="actions"><button class="secondary" id="resetSettings">Design zurücksetzen</button><button class="secondary" id="closeSettings">Schließen</button></div>
 </section>
-
 <div class="footer">J.A.R.V.I.S. · PERSONAL ASSISTANT INTERFACE</div>
 </div>
 
 <script>
-const $ = id => document.getElementById(id);
-const COLORS = {
- gold:"#d6ad55", blue:"#55aaff", violet:"#a78bfa",
- green:"#55d69a", red:"#ff6b75", cyan:"#48dce8"
-};
-const DEFAULTS = {
- color:"gold", background:"black", surface:"normal", visual:"bars",
- voice:"", speed:1, answer:"normal", fontSize:"14",
- voiceOn:true, motion:true, sound:false, reactor:true
-};
-let settings = {...DEFAULTS, ...load("jarvis_settings_v1", {})};
-let history = load("jarvis_conversation_v1", []);
-let tasks = load("jarvis_tasks_v1", []);
-let voices = [];
-let recognition = null;
-let listening = false;
-let speaking = false;
-let busy = false;
+const $=id=>document.getElementById(id);
+const COLORS={gold:"#d6ad55",blue:"#55aaff",violet:"#a78bfa",green:"#55d69a",red:"#ff6b75",cyan:"#48dce8"};
+const DEFAULTS={color:"gold",background:"black",surface:"normal",visual:"bars",voice:"",speed:1,answer:"normal",fontSize:"14",voiceOn:true,motion:true,sound:false,reactor:true};
+function load(key,fallback){try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}}
+function save(key,value){localStorage.setItem(key,JSON.stringify(value))}
+let settings={...DEFAULTS,...load("jarvis_settings_v1",{})};
+let history=load("jarvis_conversation_v1",[]);
+let tasks=load("jarvis_tasks_v1",[]);
+let voices=[],recognition=null,listening=false,speaking=false,busy=false;
 
-function load(key, fallback){
- try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
- catch { return fallback; }
-}
-function save(key, value){ localStorage.setItem(key, JSON.stringify(value)); }
-function escapeHTML(value){
- return String(value).replace(/[&<>"']/g, c => ({
-  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
- }[c]));
-}
+function persistSettings(){save("jarvis_settings_v1",settings)}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
 function applySettings(){
- const color = COLORS[settings.color] || COLORS.gold;
- document.documentElement.style.setProperty("--accent", color);
- document.documentElement.style.setProperty("--glow", color+"38");
- document.body.dataset.bg = settings.background;
- document.body.classList.toggle("no-motion", !settings.motion);
- document.documentElement.style.setProperty("--radius", settings.surface==="compact"?"12px":"20px");
+ const color=COLORS[settings.color]||COLORS.gold;
+ document.documentElement.style.setProperty("--accent",color);
+ document.documentElement.style.setProperty("--glow",color+"38");
+ document.body.dataset.bg=settings.background;
+ document.body.classList.toggle("no-motion",!settings.motion);
  document.querySelectorAll(".panel").forEach(p=>{
-  p.style.backdropFilter = settings.surface==="glass"?"blur(14px)":"none";
-  p.style.background = settings.surface==="glass"?"rgba(25,27,36,.72)":"";
-  p.style.padding = settings.surface==="compact"?"12px":"";
+  p.style.backdropFilter=settings.surface==="glass"?"blur(14px)":"none";
+  p.style.background=settings.surface==="glass"?"rgba(25,27,36,.72)":"";
+  p.style.padding=settings.surface==="compact"?"12px":"";
  });
- document.querySelector(".reactor").style.display = settings.reactor?"grid":"none";
- document.querySelectorAll(".message").forEach(m=>m.style.fontSize=settings.fontSize+"px");
+ $(".reactor").style.display=settings.reactor?"grid":"none";
  $("voiceToggle").checked=settings.voiceOn;
  $("motionToggle").checked=settings.motion;
  $("soundToggle").checked=settings.sound;
@@ -345,22 +235,30 @@ function applySettings(){
  $("themeStatus").textContent=settings.color;
  $("motionStatus").textContent=settings.motion?"Aktiv":"Aus";
  $("voiceStatus").textContent=settings.voiceOn?"Aktiv":"Aus";
- $("swatches").innerHTML=Object.entries(COLORS).map(([name,hex])=>
-  `<button class="swatch ${settings.color===name?"selected":""}" data-color="${name}" title="${name}" style="background:${hex}"></button>`
- ).join("");
+ $("swatches").innerHTML=Object.entries(COLORS).map(([name,hex])=>`<button class="swatch ${settings.color===name?"selected":""}" data-color="${name}" title="${name}" style="background:${hex}"></button>`).join("");
  $("swatches").querySelectorAll("button").forEach(b=>b.onclick=()=>{
-  settings.color=b.dataset.color; persistSettings(); applySettings();
+  settings.color=b.dataset.color;persistSettings();applySettings();
  });
 }
-function persistSettings(){ save("jarvis_settings_v1",settings); }
-function setActive(active){
- speaking=active;
- $("visualizer").classList.toggle("active",active || listening);
- $("systemGreeting").textContent=listening?"ICH HÖRE ZU":active?"JARVIS SPRICHT":"SYSTEM BEREIT";
- $("systemSub").textContent=listening?"Sprich jetzt …":active?"Sprachausgabe läuft":"Warte auf Anweisung";
+function setMode(mode){
+ const visual=$("visualizer");
+ visual.classList.remove("idle","speaking","listening");
+ visual.classList.add(mode);
+ if(mode==="listening"){
+  $("systemGreeting").textContent="ICH HÖRE ZU";
+  $("systemSub").textContent="Sprich jetzt …";
+ }else if(mode==="speaking"){
+  $("systemGreeting").textContent="JARVIS SPRICHT";
+  $("systemSub").textContent="Sprachausgabe läuft";
+ }else{
+  $("systemGreeting").textContent="SYSTEM BEREIT";
+  $("systemSub").textContent="Warte auf Anweisung";
+ }
 }
-function makeVisualizer(){
- $("visualizer").innerHTML=Array.from({length:27},()=>"<i></i>").join("");
+function refreshMode(){
+ if(listening)setMode("listening");
+ else if(speaking)setMode("speaking");
+ else setMode("idle");
 }
 function updateClock(){
  const now=new Date();
@@ -374,99 +272,83 @@ function updateConnection(){
  $("connectionText").textContent=online?"Internet verbunden":"Keine Verbindung";
 }
 async function updateBattery(){
- if(!navigator.getBattery){$("batteryText").textContent="Nicht verfügbar";return;}
+ if(!navigator.getBattery){$("batteryText").textContent="Nicht verfügbar";return}
  try{
   const b=await navigator.getBattery();
   const render=()=>{
-   const percent=Math.round(b.level*100);
-   $("batteryText").textContent=percent+"%"+(b.charging?" · Lädt":"");
-   $("batteryFill").style.width=percent+"%";
+   const p=Math.round(b.level*100);
+   $("batteryText").textContent=p+"%"+(b.charging?" · Lädt":"");
+   $("batteryFill").style.width=p+"%";
   };
   render();b.addEventListener("levelchange",render);b.addEventListener("chargingchange",render);
- }catch{$("batteryText").textContent="Nicht verfügbar";}
-}
-function renderHistory(){
- const log=$("chatLog");
- log.innerHTML="";
- if(!history.length){
-  addMessage("jarvis","System bereit. Wie kann ich helfen?",false);
- }else{
-  history.forEach(m=>addMessage(m.role==="user"?"user":"jarvis",m.content,false));
- }
- $("historyCount").textContent=history.length;
- log.scrollTop=log.scrollHeight;
+ }catch{$("batteryText").textContent="Nicht verfügbar"}
 }
 function addMessage(role,text,store=true){
- const log=$("chatLog");
  const div=document.createElement("div");
  div.className="message "+role;
  div.innerHTML=`<div class="who">${role==="user"?"DU":"JARVIS"}</div>${escapeHTML(text)}`;
- log.appendChild(div);
- log.scrollTop=log.scrollHeight;
+ $("chatLog").appendChild(div);
+ $("chatLog").scrollTop=$("chatLog").scrollHeight;
  if(store){
   history.push({role:role==="user"?"user":"model",content:text});
-  history=history.slice(-12);
-  save("jarvis_conversation_v1",history);
+  history=history.slice(-12);save("jarvis_conversation_v1",history);
   $("historyCount").textContent=history.length;
  }
+}
+function renderHistory(){
+ $("chatLog").innerHTML="";
+ if(!history.length)addMessage("jarvis","System bereit. Wie kann ich helfen?",false);
+ else history.forEach(m=>addMessage(m.role==="user"?"user":"jarvis",m.content,false));
+ $("historyCount").textContent=history.length;
 }
 function renderTasks(){
  $("taskList").innerHTML="";
  tasks.forEach((task,index)=>{
   const div=document.createElement("div");
   div.className="task"+(task.done?" done":"");
-  div.innerHTML=`<input type="checkbox" ${task.done?"checked":""} aria-label="Erledigt">
-   <span>${escapeHTML(task.text)}</span><button aria-label="Löschen">×</button>`;
-  div.querySelector("input").onchange=e=>{tasks[index].done=e.target.checked;save("jarvis_tasks_v1",tasks);renderTasks();};
-  div.querySelector("button").onclick=()=>{tasks.splice(index,1);save("jarvis_tasks_v1",tasks);renderTasks();};
+  div.innerHTML=`<input type="checkbox" ${task.done?"checked":""}><span>${escapeHTML(task.text)}</span><button>×</button>`;
+  div.querySelector("input").onchange=e=>{tasks[index].done=e.target.checked;save("jarvis_tasks_v1",tasks);renderTasks()};
+  div.querySelector("button").onclick=()=>{tasks.splice(index,1);save("jarvis_tasks_v1",tasks);renderTasks()};
   $("taskList").appendChild(div);
  });
- const open=tasks.filter(t=>!t.done).length, done=tasks.filter(t=>t.done).length;
- $("openCount").textContent=open;$("doneCount").textContent=done;
+ $("openCount").textContent=tasks.filter(t=>!t.done).length;
+ $("doneCount").textContent=tasks.filter(t=>t.done).length;
  $("taskStatus").textContent=tasks.length;
 }
 function addTask(text){
- const clean=String(text||"").trim();
- if(!clean)return;
- tasks.push({text:clean,done:false});
- save("jarvis_tasks_v1",tasks);renderTasks();$("taskInput").value="";
+ const clean=String(text||"").trim();if(!clean)return;
+ tasks.push({text:clean,done:false});save("jarvis_tasks_v1",tasks);renderTasks();$("taskInput").value="";
 }
 function speak(text){
- if(!settings.voiceOn || !("speechSynthesis" in window))return;
+ if(!settings.voiceOn||!("speechSynthesis"in window))return;
  speechSynthesis.cancel();
- const clean=String(text).replace(/```[\s\S]*?```/g," Codeblock ausgelassen ")
-  .replace(/https?:\/\/\S+/g,"").replace(/[*_#`]/g,"").trim();
+ const clean=String(text).replace(/```[\s\S]*?```/g," Codeblock ausgelassen ").replace(/https?:\/\/\S+/g,"").replace(/[*_#`]/g,"").trim();
  const utterance=new SpeechSynthesisUtterance(clean);
  utterance.lang="de-DE";utterance.rate=Number(settings.speed)||1;
  const selected=voices.find(v=>v.name===settings.voice);
  const german=voices.find(v=>v.lang.toLowerCase().startsWith("de"));
  if(selected||german)utterance.voice=selected||german;
- utterance.onstart=()=>setActive(true);
- utterance.onend=()=>setActive(false);
- utterance.onerror=()=>setActive(false);
+ utterance.onstart=()=>{speaking=true;refreshMode()};
+ utterance.onend=()=>{speaking=false;refreshMode()};
+ utterance.onerror=()=>{speaking=false;refreshMode()};
  speechSynthesis.speak(utterance);
 }
 function loadVoices(){
- if(!("speechSynthesis" in window))return;
+ if(!("speechSynthesis"in window))return;
  voices=speechSynthesis.getVoices();
  const german=voices.filter(v=>v.lang.toLowerCase().startsWith("de"));
- $("voiceSelect").innerHTML='<option value="">Automatische deutsche Stimme</option>'+
- german.map(v=>`<option value="${escapeHTML(v.name)}">${escapeHTML(v.name)}</option>`).join("");
+ $("voiceSelect").innerHTML='<option value="">Automatische deutsche Stimme</option>'+german.map(v=>`<option value="${escapeHTML(v.name)}">${escapeHTML(v.name)}</option>`).join("");
  $("voiceSelect").value=settings.voice;
 }
-if("speechSynthesis" in window){
- loadVoices();speechSynthesis.onvoiceschanged=loadVoices;
-}
+if("speechSynthesis"in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
+
 function taskCommand(message){
  const match=message.match(/^(?:jarvis[, ]*)?(?:erstelle eine aufgabe|neue aufgabe|merke dir als aufgabe)\s*:?\s*(.+)$/i);
  if(!match)return false;
- addTask(match[1]);
- addMessage("jarvis","Aufgabe gespeichert: "+match[1]);
- return true;
+ addTask(match[1]);addMessage("jarvis","Aufgabe gespeichert: "+match[1]);return true;
 }
 async function sendMessage(){
- const input=$("messageInput");
- const message=input.value.trim();
+ const input=$("messageInput"),message=input.value.trim();
  if(!message||busy)return;
  input.value="";
  if(taskCommand(message))return;
@@ -476,89 +358,56 @@ async function sendMessage(){
  $("systemGreeting").textContent="VERARBEITE ANFRAGE";
  $("systemSub").textContent="JARVIS denkt nach …";
  try{
-  const response=await fetch("/api/chat",{
-   method:"POST",
-   headers:{"Content-Type":"application/json"},
-   body:JSON.stringify({message:prompt,history:history.slice(0,-1).slice(-12)})
-  });
+  const response=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:prompt,history:history.slice(0,-1).slice(-12)})});
   const data=await response.json();
   if(!response.ok)throw new Error(data.error||"Serverfehler ("+response.status+")");
   const reply=data.reply||"Ich habe leider keine lesbare Antwort erhalten.";
   addMessage("jarvis",reply);speak(reply);
- }catch(error){
-  addMessage("jarvis","Verbindungsfehler: "+error.message);
- }finally{
-  busy=false;$("sendButton").disabled=false;
-  if(!speaking)setActive(false);
- }
+ }catch(error){addMessage("jarvis","Verbindungsfehler: "+error.message)}
+ finally{busy=false;$("sendButton").disabled=false;refreshMode()}
 }
 function setupRecognition(){
  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
- if(!SpeechRecognition){$("micButton").disabled=true;$("micButton").title="Spracherkennung nicht unterstützt";return;}
+ if(!SpeechRecognition){$("micButton").disabled=true;$("micButton").title="Spracherkennung nicht unterstützt";return}
  recognition=new SpeechRecognition();
  recognition.lang="de-DE";recognition.interimResults=false;recognition.continuous=false;
- recognition.onstart=()=>{listening=true;setActive(true);};
- recognition.onend=()=>{listening=false;if(!speaking)setActive(false);};
- recognition.onerror=()=>{listening=false;if(!speaking)setActive(false);};
- recognition.onresult=e=>{
-  const result=e.results[0][0].transcript;
-  $("messageInput").value=result;sendMessage();
- };
+ recognition.onstart=()=>{listening=true;refreshMode()};
+ recognition.onend=()=>{listening=false;refreshMode()};
+ recognition.onerror=()=>{listening=false;refreshMode()};
+ recognition.onresult=e=>{$("messageInput").value=e.results[0][0].transcript;sendMessage()};
 }
 $("sendButton").onclick=sendMessage;
-$("messageInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage();});
-$("micButton").onclick=()=>{
- if(!recognition)return;
- try{if(listening)recognition.stop();else recognition.start();}catch{}
-};
-$("stopSpeech").onclick=()=>{
- if("speechSynthesis" in window)speechSynthesis.cancel();
- setActive(false);
-};
+$("messageInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage()});
+$("micButton").onclick=()=>{if(!recognition)return;try{if(listening)recognition.stop();else recognition.start()}catch{}};
+$("stopSpeech").onclick=()=>{if("speechSynthesis"in window)speechSynthesis.cancel();speaking=false;refreshMode()};
 $("clearChat").onclick=()=>{
  if(!confirm("Gesamten Chatverlauf auf diesem Gerät löschen?"))return;
  history=[];save("jarvis_conversation_v1",history);renderHistory();
 };
 $("addTask").onclick=()=>addTask($("taskInput").value);
-$("taskInput").addEventListener("keydown",e=>{if(e.key==="Enter")addTask(e.target.value);});
+$("taskInput").addEventListener("keydown",e=>{if(e.key==="Enter")addTask(e.target.value)});
 $("settingsButton").onclick=()=>$("settingsPanel").classList.toggle("open");
 $("closeSettings").onclick=()=>$("settingsPanel").classList.remove("open");
-
-$("backgroundSelect").onchange=e=>{settings.background=e.target.value;persistSettings();applySettings();};
-$("surfaceSelect").onchange=e=>{settings.surface=e.target.value;persistSettings();applySettings();};
-$("visualSelect").onchange=e=>{
- settings.visual=e.target.value;persistSettings();
- $("visualizer").dataset.style=settings.visual;
-};
-$("voiceSelect").onchange=e=>{settings.voice=e.target.value;persistSettings();};
-$("speedRange").oninput=e=>{
- settings.speed=e.target.value;$("speedValue").textContent=Number(e.target.value).toFixed(2);persistSettings();
-};
-$("answerStyle").onchange=e=>{settings.answer=e.target.value;persistSettings();};
+$("backgroundSelect").onchange=e=>{settings.background=e.target.value;persistSettings();applySettings()};
+$("surfaceSelect").onchange=e=>{settings.surface=e.target.value;persistSettings();applySettings()};
+$("visualSelect").onchange=e=>{settings.visual=e.target.value;persistSettings()};
+$("voiceSelect").onchange=e=>{settings.voice=e.target.value;persistSettings()};
+$("speedRange").oninput=e=>{settings.speed=e.target.value;$("speedValue").textContent=Number(e.target.value).toFixed(2);persistSettings()};
+$("answerStyle").onchange=e=>{settings.answer=e.target.value;persistSettings()};
 $("fontSize").onchange=e=>{
  settings.fontSize=e.target.value;persistSettings();
  document.querySelectorAll(".message").forEach(m=>m.style.fontSize=settings.fontSize+"px");
 };
-$("voiceToggle").onchange=e=>{settings.voiceOn=e.target.checked;persistSettings();applySettings();};
-$("motionToggle").onchange=e=>{settings.motion=e.target.checked;persistSettings();applySettings();};
-$("soundToggle").onchange=e=>{settings.sound=e.target.checked;persistSettings();};
-$("reactorToggle").onchange=e=>{settings.reactor=e.target.checked;persistSettings();applySettings();};
-$("resetSettings").onclick=()=>{
- settings={...DEFAULTS};persistSettings();applySettings();
-};
+$("voiceToggle").onchange=e=>{settings.voiceOn=e.target.checked;persistSettings();applySettings()};
+$("motionToggle").onchange=e=>{settings.motion=e.target.checked;persistSettings();applySettings()};
+$("soundToggle").onchange=e=>{settings.sound=e.target.checked;persistSettings()};
+$("reactorToggle").onchange=e=>{settings.reactor=e.target.checked;persistSettings();applySettings()};
+$("resetSettings").onclick=()=>{settings={...DEFAULTS};persistSettings();applySettings();refreshMode()};
 
 window.addEventListener("online",updateConnection);
 window.addEventListener("offline",updateConnection);
-
-makeVisualizer();
-$("visualizer").dataset.style=settings.visual;
-applySettings();
-renderHistory();
-renderTasks();
-setupRecognition();
-updateClock();
-updateConnection();
-updateBattery();
+applySettings();renderHistory();renderTasks();setupRecognition();
+updateClock();updateConnection();updateBattery();refreshMode();
 setInterval(updateClock,1000);
 </script>
 </body>
