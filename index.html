@@ -3,248 +3,475 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080808">
 <title>J.A.R.V.I.S.</title>
 
 <style>
+:root {
+  --gold: #d6ad52;
+  --gold2: #ffdf91;
+  --bg: #080808;
+  --panel: #11110f;
+  --muted: #89816f;
+}
+
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  background: #050505;
-  color: #f5c542;
+  background:
+    radial-gradient(ellipse at 50% 5%, #29200c 0%, transparent 42%),
+    #080808;
+  color: #eee5d1;
   font-family: Arial, sans-serif;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+}
+
+.app {
+  max-width: 850px;
+  margin: auto;
+  padding: 22px 16px 30px;
 }
 
 header {
-  width: 100%;
-  padding: 22px;
-  text-align: center;
-  border-bottom: 1px solid #70551c;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #55421c;
+  padding-bottom: 15px;
+}
+
+.logo {
+  color: var(--gold2);
+  font-size: 25px;
   letter-spacing: 5px;
-  font-size: 24px;
+  font-weight: 300;
+}
+
+.version {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+
+.status {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  margin-top: 20px;
+  color: var(--gold);
+  font-size: 11px;
+  letter-spacing: 3px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d6ad52;
+  box-shadow: 0 0 12px #d6ad52;
+}
+
+.reactor-area {
+  display: flex;
+  justify-content: center;
+  padding: 34px 0 22px;
 }
 
 .reactor {
-  width: 130px;
-  height: 130px;
-  margin: 30px auto 15px;
-  border: 5px solid #d5a82f;
+  width: 190px;
+  height: 190px;
   border-radius: 50%;
-  box-shadow: 0 0 25px #c99520, inset 0 0 20px #c99520;
   display: grid;
   place-items: center;
-  font-size: 52px;
-  animation: glow 2s infinite alternate;
+  position: relative;
+  background: radial-gradient(circle, #4a3510 0%, #171208 35%, #080808 68%);
+  border: 2px solid #9a762c;
+  box-shadow:
+    0 0 18px #d6ad5266,
+    0 0 55px #d6ad5233,
+    inset 0 0 25px #d6ad5233;
+  animation: pulse 4s infinite ease-in-out;
 }
 
-@keyframes glow {
-  from { box-shadow: 0 0 10px #c99520; }
-  to { box-shadow: 0 0 35px #ffcf40; }
+.reactor::before,
+.reactor::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid #c69b42;
 }
 
-#status {
-  color: #aaa;
-  font-size: 13px;
-  margin-bottom: 18px;
+.reactor::before {
+  inset: 12px;
+  border-style: dashed;
+  animation: spin 24s linear infinite;
 }
 
-#chat {
-  width: 92%;
-  max-width: 600px;
-  height: 42vh;
+.reactor::after {
+  inset: 27px;
+  border-color: #ffdc8c;
+  box-shadow: inset 0 0 20px #d6ad5244;
+}
+
+.core {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  z-index: 1;
+  background: radial-gradient(circle, #fff5cf 0%, #e8bc5c 28%, #a8791d 65%, #3b2607 100%);
+  box-shadow: 0 0 20px #f4cb70, 0 0 55px #c28b2e;
+}
+
+.reactor.thinking {
+  animation: pulse 1s infinite ease-in-out;
+}
+
+.reactor.listening {
+  box-shadow: 0 0 35px #f2c75e, 0 0 90px #d6ad5277;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.035); }
+}
+
+.system-info {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  margin: 10px 0 24px;
+}
+
+.info {
+  border: 1px solid #49391c;
+  background: #11100d;
+  border-radius: 9px;
+  text-align: center;
+  padding: 12px 5px;
+}
+
+.info small {
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+}
+
+.info div {
+  color: var(--gold2);
+  font-size: 12px;
+  margin-top: 7px;
+}
+
+.section-title {
+  color: var(--gold);
+  font-size: 11px;
+  letter-spacing: 3px;
+  margin: 20px 0 12px;
+}
+
+.chat {
+  height: 340px;
   overflow-y: auto;
-  border: 1px solid #70551c;
+  background: #0e0e0c;
+  border: 1px solid #44351c;
   border-radius: 12px;
-  padding: 15px;
-  background: #101010;
+  padding: 14px;
+  scroll-behavior: smooth;
 }
 
 .message {
-  margin: 12px 0;
+  max-width: 90%;
+  padding: 12px 14px;
+  margin: 10px 0;
+  border-radius: 10px;
   line-height: 1.5;
-  overflow-wrap: anywhere;
+  font-size: 14px;
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
-.user { color: white; }
-.jarvis { color: #f5c542; }
-.error { color: #ff7777; }
+.user {
+  margin-left: auto;
+  background: #352a14;
+  border: 1px solid #80632c;
+  color: #fff0cc;
+}
+
+.jarvis {
+  margin-right: auto;
+  background: #171612;
+  border: 1px solid #55431f;
+  color: #e9dfc9;
+}
+
+.welcome {
+  color: #b7a982;
+  text-align: center;
+  padding: 30px 10px;
+  line-height: 1.7;
+  font-size: 13px;
+}
 
 .controls {
-  width: 92%;
-  max-width: 600px;
   display: flex;
-  gap: 8px;
-  margin-top: 15px;
+  gap: 9px;
+  margin-top: 12px;
 }
 
 input {
-  flex: 1;
   min-width: 0;
-  padding: 15px;
-  border-radius: 8px;
-  border: 1px solid #a77c20;
-  background: #151515;
+  flex: 1;
+  background: #12110e;
+  border: 1px solid #665024;
+  border-radius: 9px;
   color: white;
-  font-size: 16px;
+  padding: 14px;
+  font-size: 14px;
+  outline: none;
+}
+
+input:focus {
+  border-color: var(--gold2);
+  box-shadow: 0 0 12px #d6ad5222;
 }
 
 button {
-  background: #d6a52c;
-  color: black;
-  border: none;
-  border-radius: 8px;
+  background: #2b2110;
+  border: 1px solid #9c7836;
+  color: var(--gold2);
+  border-radius: 9px;
   padding: 12px 15px;
-  font-weight: bold;
   cursor: pointer;
+  font-size: 13px;
 }
 
-button:disabled { opacity: .5; }
+button:active {
+  transform: scale(.96);
+}
 
-.options {
+button:disabled {
+  opacity: .4;
+}
+
+.send {
+  background: linear-gradient(135deg, #d6ad52, #8b641e);
+  color: #100d07;
+  font-weight: bold;
+}
+
+.extra-controls {
   display: flex;
-  gap: 10px;
-  margin: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
+  gap: 9px;
+  margin-top: 10px;
 }
 
-footer {
-  color: #777;
+.extra-controls button {
+  flex: 1;
   font-size: 11px;
-  padding: 20px;
+}
+
+.footer {
+  text-align: center;
+  color: #655b46;
+  font-size: 9px;
+  letter-spacing: 2px;
+  margin-top: 28px;
+}
+
+a {
+  color: #e9bf63;
+  overflow-wrap: anywhere;
+}
+
+@media(max-width: 480px) {
+  .app { padding: 17px 12px 25px; }
+  .logo { font-size: 21px; }
+  .reactor { width: 165px; height: 165px; }
+  .chat { height: 330px; }
+  .controls button { padding: 11px; }
 }
 </style>
 </head>
 
 <body>
+<div class="app">
 
-<header>J.A.R.V.I.S.</header>
+<header>
+  <div class="logo">J.A.R.V.I.S.</div>
+  <div class="version">MARK VII · AI SYSTEM</div>
+</header>
 
-<div class="reactor">J</div>
-<div id="status">SYSTEM ONLINE</div>
+<div class="status">
+  <span class="dot"></span>
+  <span id="status">SYSTEM ONLINE</span>
+</div>
 
-<div id="chat"></div>
+<div class="reactor-area">
+  <div class="reactor" id="reactor">
+    <div class="core"></div>
+  </div>
+</div>
+
+<div class="system-info">
+  <div class="info">
+    <small>SYSTEM</small>
+    <div>ONLINE</div>
+  </div>
+  <div class="info">
+    <small>MEMORY</small>
+    <div id="memoryStatus">ACTIVE</div>
+  </div>
+  <div class="info">
+    <small>NETWORK</small>
+    <div>READY</div>
+  </div>
+</div>
+
+<div class="section-title">COMMUNICATION TERMINAL</div>
+
+<div class="chat" id="chat">
+  <div class="welcome" id="welcome">
+    J.A.R.V.I.S. SYSTEM INITIALIZED<br>
+    Willkommen zurück.<br>
+    Wie kann ich Ihnen behilflich sein?
+  </div>
+</div>
 
 <div class="controls">
-  <input id="message" placeholder="Nachricht an JARVIS...">
-  <button id="send" onclick="sendMessage()">SENDEN</button>
+  <input id="message" type="text"
+    placeholder="Nachricht an JARVIS..."
+    autocomplete="off">
+  <button class="send" id="sendButton" onclick="sendMessage()">SEND</button>
 </div>
 
-<div class="options">
-  <button onclick="startMic()">🎙️ Mikrofon</button>
-  <button onclick="toggleVoice()" id="voiceBtn">🔊 Stimme AN</button>
-  <button onclick="clearMemory()">🗑️ Verlauf löschen</button>
+<div class="extra-controls">
+  <button id="micButton" onclick="startListening()">🎙 MIKROFON</button>
+  <button id="voiceButton" onclick="toggleVoice()">🔊 SPRACHE AN</button>
+  <button onclick="clearMemory()">🗑 LÖSCHEN</button>
 </div>
 
-<footer>JARVIS PERSONAL AI SYSTEM · MEMORY ACTIVE</footer>
+<div class="footer">
+  STARK INDUSTRIES · PERSONAL AI INTERFACE
+</div>
+
+</div>
 
 <script>
 const chat = document.getElementById("chat");
 const input = document.getElementById("message");
 const statusText = document.getElementById("status");
-const sendButton = document.getElementById("send");
+const reactor = document.getElementById("reactor");
+const sendButton = document.getElementById("sendButton");
+const micButton = document.getElementById("micButton");
+const voiceButton = document.getElementById("voiceButton");
 
-const STORAGE_KEY = "jarvis_conversation_v1";
+const MEMORY_KEY = "jarvis_conversation_v1";
 
-let voiceEnabled = true;
 let history = [];
+let voiceEnabled = true;
+let busy = false;
 
 try {
-  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-
+  const saved = JSON.parse(localStorage.getItem(MEMORY_KEY) || "[]");
   if (Array.isArray(saved)) {
-    history = saved
-      .filter(item =>
-        item &&
-        ["user", "model"].includes(item.role) &&
-        typeof item.text === "string"
-      )
-      .slice(-12);
+    history = saved.filter(item =>
+      item &&
+      ["user", "model"].includes(item.role) &&
+      typeof item.text === "string"
+    ).slice(-12);
   }
 } catch {
   history = [];
 }
 
-function saveMemory() {
-  try {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(history.slice(-12))
-    );
-  } catch {
-    statusText.textContent = "SPEICHER NICHT VERFÜGBAR";
-  }
+document.getElementById("memoryStatus").textContent =
+  history.length ? "SAVED" : "ACTIVE";
+
+function setStatus(text, mode = "") {
+  statusText.textContent = text;
+  reactor.classList.remove("thinking", "listening");
+  if (mode) reactor.classList.add(mode);
 }
 
 function addMessage(text, type) {
-  const div = document.createElement("div");
-  div.className = "message " + type;
-  div.textContent = text;
-  chat.appendChild(div);
+  document.getElementById("welcome")?.remove();
+
+  const message = document.createElement("div");
+  message.className = "message " + type;
+  message.textContent = text;
+
+  chat.appendChild(message);
   chat.scrollTop = chat.scrollHeight;
-  return div;
 }
 
-function displayHistory() {
-  chat.innerHTML = "";
-
-  addMessage(
-    "JARVIS: Guten Tag. Ich bin bereit. Ich kann mich an deinen gespeicherten Gesprächsverlauf erinnern.",
-    "jarvis"
-  );
-
-  for (const item of history) {
+function renderHistory() {
+  history.forEach(item => {
     addMessage(
-      (item.role === "user" ? "DU: " : "JARVIS: ") + item.text,
+      item.text,
       item.role === "user" ? "user" : "jarvis"
     );
+  });
+}
+
+function saveHistory() {
+  history = history.slice(-12);
+
+  try {
+    localStorage.setItem(MEMORY_KEY, JSON.stringify(history));
+    document.getElementById("memoryStatus").textContent = "SAVED";
+  } catch {
+    document.getElementById("memoryStatus").textContent = "ERROR";
+  }
+}
+
+function toggleVoice() {
+  voiceEnabled = !voiceEnabled;
+
+  voiceButton.textContent = voiceEnabled
+    ? "🔊 SPRACHE AN"
+    : "🔇 SPRACHE AUS";
+
+  if (!voiceEnabled && "speechSynthesis" in window) {
+    speechSynthesis.cancel();
   }
 }
 
 function speak(text) {
   if (!voiceEnabled || !("speechSynthesis" in window)) return;
 
-  window.speechSynthesis.cancel();
+  speechSynthesis.cancel();
 
-  const speech = new SpeechSynthesisUtterance(text);
-  speech.lang = "de-DE";
-  speech.rate = 0.95;
-  speech.pitch = 0.85;
+  const cleanText = text.replace(/https?:\/\/\S+/g, "Link");
 
-  window.speechSynthesis.speak(speech);
-}
+  const utterance = new SpeechSynthesisUtterance(cleanText);
+  utterance.lang = "de-DE";
+  utterance.rate = 1;
+  utterance.pitch = 0.95;
 
-function toggleVoice() {
-  voiceEnabled = !voiceEnabled;
-
-  document.getElementById("voiceBtn").textContent =
-    voiceEnabled ? "🔊 Stimme AN" : "🔇 Stimme AUS";
-
-  if (!voiceEnabled) {
-    window.speechSynthesis.cancel();
-  }
+  speechSynthesis.speak(utterance);
 }
 
 async function sendMessage() {
   const message = input.value.trim();
 
-  if (!message || sendButton.disabled) return;
+  if (!message || busy) return;
 
-  addMessage("DU: " + message, "user");
+  busy = true;
+  sendButton.disabled = true;
+
   input.value = "";
 
+  addMessage(message, "user");
+  setStatus("PROCESSING REQUEST", "thinking");
+
   const previousHistory = history.slice(-12);
-
-  sendButton.disabled = true;
-  statusText.textContent = "JARVIS DENKT...";
-
-  const waiting = addMessage("JARVIS: Einen Moment...", "jarvis");
 
   try {
     const response = await fetch("/api/chat", {
@@ -261,88 +488,114 @@ async function sendMessage() {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || "HTTP-Fehler " + response.status);
+      throw new Error(data.error || "Serverfehler");
     }
 
     if (!data.reply) {
       throw new Error("Keine Antwort erhalten.");
     }
 
-    waiting.textContent = "JARVIS: " + data.reply;
+    addMessage(data.reply, "jarvis");
 
-    history = [
-      ...previousHistory,
+    history.push(
       { role: "user", text: message },
       { role: "model", text: data.reply }
-    ].slice(-12);
+    );
 
-    saveMemory();
+    saveHistory();
     speak(data.reply);
 
-    statusText.textContent = "SYSTEM ONLINE · MEMORY ACTIVE";
+    setStatus("SYSTEM ONLINE");
 
   } catch (error) {
-    waiting.className = "message error";
-    waiting.textContent = "JARVIS-FEHLER: " + error.message;
-    statusText.textContent = "VERBINDUNGSFEHLER";
+    addMessage(
+      "JARVIS-FEHLER: " + error.message,
+      "jarvis"
+    );
+    setStatus("CONNECTION ERROR");
   } finally {
+    busy = false;
     sendButton.disabled = false;
+    input.focus();
   }
 }
 
 function clearMemory() {
-  if (!confirm("Möchtest du deinen gespeicherten Gesprächsverlauf löschen?")) {
-    return;
-  }
+  if (!confirm("Gesamten Gesprächsverlauf löschen?")) return;
 
   history = [];
-  localStorage.removeItem(STORAGE_KEY);
-  displayHistory();
 
-  statusText.textContent = "GEDÄCHTNIS GELÖSCHT";
+  try {
+    localStorage.removeItem(MEMORY_KEY);
+  } catch {}
+
+  chat.innerHTML = `
+    <div class="welcome" id="welcome">
+      J.A.R.V.I.S. SYSTEM INITIALIZED<br>
+      Gesprächsspeicher wurde zurückgesetzt.
+    </div>
+  `;
+
+  document.getElementById("memoryStatus").textContent = "ACTIVE";
+  setStatus("SYSTEM ONLINE");
+
+  if ("speechSynthesis" in window) {
+    speechSynthesis.cancel();
+  }
 }
 
-input.addEventListener("keydown", event => {
-  if (event.key === "Enter") sendMessage();
-});
+const SpeechRecognition =
+  window.SpeechRecognition ||
+  window.webkitSpeechRecognition;
 
-function startMic() {
-  const Recognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
-  if (!Recognition) {
-    addMessage("JARVIS: Spracheingabe wird nicht unterstützt.", "error");
+function startListening() {
+  if (!SpeechRecognition) {
+    addMessage(
+      "Dein Browser unterstützt keine Spracheingabe. Bitte nutze die Tastatur oder die Spracheingabe deiner Samsung-Tastatur.",
+      "jarvis"
+    );
     return;
   }
 
-  const recognition = new Recognition();
+  const recognition = new SpeechRecognition();
+
   recognition.lang = "de-DE";
   recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
 
-  statusText.textContent = "ICH HÖRE ZU...";
+  recognition.onstart = () => {
+    setStatus("LISTENING", "listening");
+    micButton.textContent = "🎙 HÖRE ZU...";
+  };
 
   recognition.onresult = event => {
     input.value = event.results[0][0].transcript;
     sendMessage();
   };
 
-  recognition.onerror = event => {
-    statusText.textContent = "MIKROFONFEHLER: " + event.error;
+  recognition.onerror = () => {
+    setStatus("SYSTEM ONLINE");
+    micButton.textContent = "🎙 MIKROFON";
   };
 
   recognition.onend = () => {
-    if (statusText.textContent === "ICH HÖRE ZU...") {
-      statusText.textContent = "SYSTEM ONLINE";
-    }
+    micButton.textContent = "🎙 MIKROFON";
+    if (!busy) setStatus("SYSTEM ONLINE");
   };
 
-  recognition.start();
+  try {
+    recognition.start();
+  } catch {
+    addMessage("Mikrofon konnte nicht gestartet werden.", "jarvis");
+    setStatus("SYSTEM ONLINE");
+  }
 }
 
-displayHistory();
-statusText.textContent = "SYSTEM ONLINE · MEMORY ACTIVE";
-</script>
+input.addEventListener("keydown", event => {
+  if (event.key === "Enter") sendMessage();
+});
 
+renderHistory();
+</script>
 </body>
 </html>
