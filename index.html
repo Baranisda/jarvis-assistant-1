@@ -1,0 +1,289 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#030b18">
+<title>JARVIS - Baran Edition</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#030b18;color:#d9f4ff;
+ font-family:Arial,sans-serif;min-height:100vh;
+}
+header{text-align:center;padding:24px 12px}
+h1{letter-spacing:7px;color:#65d9ff}
+#status{font-size:12px;color:#83b9d5}
+.reactor{
+ width:170px;height:170px;border-radius:50%;
+ border:3px solid #45cfff;
+ box-shadow:0 0 25px #008cff,inset 0 0 30px #008cff;
+ display:grid;place-items:center;margin:15px auto 25px;
+ transition:.3s;
+}
+.reactor.active{
+ box-shadow:0 0 60px #00bfff,inset 0 0 50px #008cff;
+}
+.core{
+ width:80px;height:80px;border-radius:50%;
+ background:#b9f4ff;box-shadow:0 0 45px #16bfff;
+}
+main{width:92%;max-width:520px;margin:auto}
+#chat{
+ height:300px;overflow-y:auto;background:#09182b;
+ border:1px solid #16476a;border-radius:15px;
+ padding:12px;margin-bottom:12px;
+}
+.msg{
+ padding:12px;margin:9px 0;border-radius:12px;
+ background:#102b45;line-height:1.5;
+ overflow-wrap:anywhere;
+}
+.user{background:#124d70;text-align:right}
+.system{color:#8bb4ca;font-size:12px}
+.controls{display:flex;gap:7px}
+input{
+ flex:1;min-width:0;background:#0b1c30;color:white;
+ border:1px solid #24638a;border-radius:10px;padding:13px;
+ font-size:15px;
+}
+button{
+ background:#087eae;color:white;border:0;
+ border-radius:10px;padding:12px;font-weight:bold;
+}
+button:disabled{opacity:.5}
+#mic{margin-top:10px;width:100%;padding:15px}
+#mic.listening{background:#b52f45}
+.options{
+ display:flex;gap:10px;margin-top:10px;
+ align-items:center;font-size:13px;color:#a8c6df;
+}
+select{
+ background:#102b45;color:white;padding:8px;
+ border:1px solid #24638a;border-radius:8px;
+}
+footer{text-align:center;padding:20px;color:#537b96;font-size:11px}
+</style>
+</head>
+
+<body>
+<header>
+<h1>J.A.R.V.I.S.</h1>
+<div id="status">SYSTEM ONLINE · BARAN EDITION</div>
+</header>
+
+<div class="reactor" id="reactor">
+<div class="core"></div>
+</div>
+
+<main>
+<div id="chat" aria-live="polite">
+<div class="msg">
+Guten Tag, Baran. Ich bin JARVIS.
+Mein Sprachsystem ist bereit.
+Mein KI-Gehirn muss noch verbunden werden.
+</div>
+</div>
+
+<div class="controls">
+<input id="message" placeholder="Nachricht an JARVIS..." autocomplete="off">
+<button id="send">Senden</button>
+</div>
+
+<button id="mic">🎙️ Sprechen</button>
+
+<div class="options">
+<label for="voice">Stimme:</label>
+<select id="voice">
+<option value="0">Automatisch</option>
+</select>
+<button id="test">Stimme testen</button>
+</div>
+</main>
+
+<footer>
+JARVIS v0.2 · BARAN EDITION
+</footer>
+
+<script>
+const chat=document.getElementById("chat");
+const input=document.getElementById("message");
+const mic=document.getElementById("mic");
+const status=document.getElementById("status");
+const reactor=document.getElementById("reactor");
+
+let recognition=null;
+let listening=false;
+
+function addMessage(text,type){
+ const div=document.createElement("div");
+ div.className="msg "+type;
+ div.textContent=text;
+ chat.appendChild(div);
+ chat.scrollTop=chat.scrollHeight;
+}
+
+function setStatus(text,active=false){
+ status.textContent=text;
+ reactor.classList.toggle("active",active);
+}
+
+function getGermanVoice(){
+ const voices=speechSynthesis.getVoices();
+ const german=voices.filter(v=>v.lang.toLowerCase().startsWith("de"));
+ const selected=Number(document.getElementById("voice").value);
+ return german[selected]||german[0]||null;
+}
+
+function speak(text){
+ if(!("speechSynthesis" in window))return;
+ speechSynthesis.cancel();
+
+ const utterance=new SpeechSynthesisUtterance(text);
+ utterance.lang="de-DE";
+ utterance.rate=0.88;
+ utterance.pitch=0.78;
+
+ const voice=getGermanVoice();
+ if(voice)utterance.voice=voice;
+
+ utterance.onstart=()=>setStatus("JARVIS SPRICHT",true);
+ utterance.onend=()=>setStatus("SYSTEM ONLINE");
+ speechSynthesis.speak(utterance);
+}
+
+function loadVoices(){
+ const voices=speechSynthesis.getVoices();
+ const german=voices.filter(v=>v.lang.toLowerCase().startsWith("de"));
+ const select=document.getElementById("voice");
+
+ select.innerHTML="";
+ german.forEach((v,i)=>{
+ const option=document.createElement("option");
+ option.value=i;
+ option.textContent=v.name;
+ select.appendChild(option);
+ });
+
+ if(!german.length){
+ const option=document.createElement("option");
+ option.textContent="Systemstimme";
+ select.appendChild(option);
+ }
+}
+
+if("speechSynthesis" in window){
+ loadVoices();
+ speechSynthesis.onvoiceschanged=loadVoices;
+}
+
+function sendMessage(){
+ const text=input.value.trim();
+ if(!text)return;
+
+ addMessage(text,"user");
+ input.value="";
+
+ addMessage(
+ "Ich habe deine Nachricht empfangen, Baran. Mein Online-KI-Gehirn ist noch nicht verbunden. Sobald wir die KI-Schnittstelle eingerichtet haben, kann ich intelligent darauf antworten.",
+ "assistant"
+ );
+
+ setStatus("NACHRICHT EMPFANGEN");
+}
+
+document.getElementById("send").addEventListener("click",sendMessage);
+
+input.addEventListener("keydown",e=>{
+ if(e.key==="Enter")sendMessage();
+});
+
+function stopListening(){
+ if(recognition){
+ try{recognition.stop()}catch(e){}
+ }
+ listening=false;
+ mic.classList.remove("listening");
+ mic.textContent="🎙️ Sprechen";
+ setStatus("SYSTEM ONLINE");
+}
+
+function startListening(){
+ const Speech=window.SpeechRecognition||
+              window.webkitSpeechRecognition;
+
+ if(!Speech){
+ addMessage(
+ "Dein Browser unterstützt diese Spracherkennung nicht. Bitte teste Chrome oder die Samsung-Tastatur-Sprachfunktion.",
+ "system"
+ );
+ return;
+ }
+
+ if(listening){
+ stopListening();
+ return;
+ }
+
+ recognition=new Speech();
+ recognition.lang="de-DE";
+ recognition.continuous=false;
+ recognition.interimResults=true;
+ recognition.maxAlternatives=3;
+
+ let finalText="";
+
+ recognition.onstart=()=>{
+ listening=true;
+ mic.classList.add("listening");
+ mic.textContent="⏹ Zuhören beenden";
+ setStatus("ICH HÖRE ZU...",true);
+ };
+
+ recognition.onresult=e=>{
+ let interim="";
+ for(let i=e.resultIndex;i<e.results.length;i++){
+ const result=e.results[i];
+ if(result.isFinal){
+ finalText+=result[0].transcript;
+ }else{
+ interim+=result[0].transcript;
+ }
+ }
+ input.value=finalText+interim;
+ };
+
+ recognition.onerror=e=>{
+ addMessage("Sprachfehler: "+e.error+
+ ". Prüfe deine Mikrofonberechtigung und Internetverbindung.","system");
+ stopListening();
+ };
+
+ recognition.onend=()=>{
+ const text=finalText.trim();
+ stopListening();
+
+ if(text){
+ input.value=text;
+ sendMessage();
+ }
+ };
+
+ try{
+ recognition.start();
+ }catch(e){
+ addMessage("Mikrofon konnte nicht gestartet werden. Bitte erneut versuchen.","system");
+ stopListening();
+ }
+}
+
+mic.addEventListener("click",startListening);
+
+document.getElementById("test").addEventListener("click",()=>{
+ speak("Guten Tag Baran. JARVIS Sprachsystem ist bereit.");
+});
+</script>
+</body>
+</html>
