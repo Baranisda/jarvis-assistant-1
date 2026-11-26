@@ -10,17 +10,36 @@ function decodeHtml(text = "") {
     .trim();
 }
 
+function shouldSearch(message) {
+  const text = message.toLowerCase();
+
+  const currentTopics =
+    /\b(aktuell|momentan|derzeit|gerade|heute|gestern|neueste|neuesten|aktuellste|aktuellsten|stand heute|live|jetzt|diese woche|diesen monat|2026|2027)\b/;
+
+  const explicitSearch =
+    /\b(recherchiere|recherchier|google|such im internet|suche im internet|such online|recherchiere online|finde heraus|nachschauen|nachsehen)\b/;
+
+  const changingFacts =
+    /\b(wer führt|wer liegt vorne|tabellenführer|tabelle|tabellenplatz|spielstand|ergebnis|torschützenliste|torschützenkönig|top scorer|transfer|wechselgerücht|verletzungsupdate|öffnungszeiten|preis|kostet|wetter|wahlumfrage|aktienkurs|wechselkurs|verfügbarkeit|spielplan|spieltermine|wann spielt)\b/;
+
+  return (
+    currentTopics.test(text) ||
+    explicitSearch.test(text) ||
+    changingFacts.test(text)
+  );
+}
+
 async function searchNews(query) {
   const url =
     "https://news.google.com/rss/search?q=" +
     encodeURIComponent(query) +
     "&hl=de&gl=DE&ceid=DE:de";
 
-  const response = await fetch(url, {
-    headers: { "User-Agent": "JARVIS/1.0" }
-  });
+  const response = await fetch(url);
 
-  if (!response.ok) throw new Error("News-Suche fehlgeschlagen");
+  if (!response.ok) {
+    throw new Error("News-Suche fehlgeschlagen");
+  }
 
   const xml = await response.text();
 
@@ -28,12 +47,14 @@ async function searchNews(query) {
     .slice(0, 5)
     .map(match => {
       const item = match[1];
-      const get = tag =>
-        item.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`))
-          ? decodeHtml(
-              item.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`))[1]
-            )
-          : "";
+
+      const get = tag => {
+        const found = item.match(
+          new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`)
+        );
+
+        return found ? decodeHtml(found[1]) : "";
+      };
 
       return {
         title: get("title"),
@@ -51,7 +72,10 @@ async function searchWikipedia(query) {
     "&format=json&utf8=1";
 
   const response = await fetch(url);
-  if (!response.ok) throw new Error("Wikipedia-Suche fehlgeschlagen");
+
+  if (!response.ok) {
+    throw new Error("Wikipedia-Suche fehlgeschlagen");
+  }
 
   const data = await response.json();
 
@@ -113,9 +137,7 @@ export default async function handler(req, res) {
       }
     ];
 
-    const needsSearch =
-      /aktuell|heute|neueste|neuesten|news|nachrichten|recherch|internet|stand heute|2026|gestern/i
-        .test(message);
+    const needsSearch = shouldSearch(message);
 
     let research = "";
     let sources = [];
@@ -127,10 +149,14 @@ export default async function handler(req, res) {
       ]);
 
       const news =
-        results[0].status === "fulfilled" ? results[0].value : [];
+        results[0].status === "fulfilled"
+          ? results[0].value
+          : [];
 
       const wiki =
-        results[1].status === "fulfilled" ? results[1].value : [];
+        results[1].status === "fulfilled"
+          ? results[1].value
+          : [];
 
       sources = [...news, ...wiki];
 
@@ -140,7 +166,7 @@ export default async function handler(req, res) {
 
       if (!research) {
         research =
-          "Die externen Suchdienste haben gerade keine Ergebnisse geliefert.";
+          "Die Suchdienste haben keine Ergebnisse geliefert.";
       }
     }
 
@@ -151,10 +177,10 @@ export default async function handler(req, res) {
         role: "user",
         parts: [{
           text:
-            "Zusätzliche Recherche-Ergebnisse:\n" +
+            "Internet-Recherche wurde automatisch aktiviert.\n" +
             research +
-            "\nNutze diese Informationen kritisch. Erfinde keine Fakten. " +
-            "Wenn keine Ergebnisse vorhanden sind, sage das offen."
+            "\nNutze die Ergebnisse kritisch. Erfinde keine Fakten. " +
+            "Wenn die Quellen nicht ausreichen, sage das offen."
         }]
       });
     }
@@ -172,9 +198,9 @@ export default async function handler(req, res) {
             parts: [{
               text:
                 "Du bist JARVIS, ein intelligenter deutscher KI-Assistent. " +
-                "Nutze den Gesprächsverlauf. Bei Recherchefragen verwende " +
-                "die bereitgestellten Suchergebnisse. Unterscheide aktuelle " +
-                "Informationen von älterem Wissen. Erfinde keine Quellen."
+                "Nutze den Gesprächsverlauf. Bei aktuellen Fragen verwende " +
+                "die bereitgestellten Recherche-Ergebnisse. Erfinde keine " +
+                "Fakten oder Quellen. Antworte natürlich und verständlich."
             }]
           },
           contents: finalContents
