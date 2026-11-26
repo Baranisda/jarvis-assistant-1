@@ -35,7 +35,7 @@ export default async function handler(req, res) {
               "x-goog-api-key": apiKey
             },
             body: JSON.stringify({
-              model: "gemini-3.8-flash",
+              model: "gemini-3.5-flash-lite",
               input: message,
               system_instruction:
                 "Du bist JARVIS, ein intelligenter deutscher KI-Assistent. Antworte hilfreich, natürlich und präzise. Nenne den Besitzer Baran, wenn es passt.",
