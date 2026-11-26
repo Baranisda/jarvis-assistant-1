@@ -81,6 +81,36 @@ main {
   letter-spacing:3px;
   margin:8px;
 }
+.dashboard {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin:18px 0;
+}
+.dash-card {
+  background:linear-gradient(145deg,#171e29,#0d121a);
+  border:1px solid #303846;
+  border-radius:13px;
+  padding:14px;
+  min-width:0;
+}
+.dash-label {
+  color:var(--muted);
+  font-size:11px;
+  letter-spacing:1px;
+  margin-bottom:9px;
+}
+.dash-value {
+  color:var(--gold);
+  font-size:20px;
+  font-weight:bold;
+  overflow-wrap:anywhere;
+}
+.dash-sub {
+  color:var(--muted);
+  font-size:11px;
+  margin-top:5px;
+}
 .chat {
   background:#0e131d;
   border:1px solid #292f3b;
@@ -210,6 +240,10 @@ footer {
   font-size:11px;
   padding:25px;
 }
+@media(max-width:380px) {
+  .dash-value {font-size:17px}
+  .logo {font-size:19px}
+}
 </style>
 </head>
 
@@ -224,6 +258,32 @@ footer {
     <div class="reactor"><div class="reactor-inner"></div></div>
   </div>
   <div class="status" id="status">SYSTEM ONLINE</div>
+
+  <div class="dashboard">
+    <div class="dash-card">
+      <div class="dash-label">🕒 UHRZEIT</div>
+      <div class="dash-value" id="clock">--:--:--</div>
+      <div class="dash-sub" id="date">Datum wird geladen...</div>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-label">🔋 AKKUSTAND</div>
+      <div class="dash-value" id="battery">Nicht verfügbar</div>
+      <div class="dash-sub" id="batteryStatus">Browser-Unterstützung abhängig</div>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-label">🌐 INTERNET</div>
+      <div class="dash-value" id="internet">Prüfe...</div>
+      <div class="dash-sub">Verbindungsstatus</div>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-label">📋 AUFGABEN</div>
+      <div class="dash-value" id="dashTasks">0</div>
+      <div class="dash-sub" id="dashTasksSub">Noch keine Aufgaben</div>
+    </div>
+  </div>
 
   <div class="chat" id="chat">
     <div class="message jarvis">
@@ -301,12 +361,84 @@ const statusText = document.getElementById("status");
 
 let history = [];
 let tasks = [];
+let batteryManager = null;
+
 let settings = {
   voice:true,
   speed:1,
   style:"normal",
   theme:"gold"
 };
+
+// DASHBOARD: UHR UND DATUM
+function updateClock() {
+  const now = new Date();
+
+  document.getElementById("clock").textContent =
+    now.toLocaleTimeString("de-DE");
+
+  document.getElementById("date").textContent =
+    now.toLocaleDateString("de-DE", {
+      weekday:"long",
+      day:"2-digit",
+      month:"long",
+      year:"numeric"
+    });
+}
+
+// DASHBOARD: INTERNET
+function updateInternet() {
+  const online = navigator.onLine;
+  const field = document.getElementById("internet");
+
+  field.textContent = online ? "ONLINE" : "OFFLINE";
+  field.style.color = online ? "#69d69b" : "#ff7777";
+}
+
+window.addEventListener("online",updateInternet);
+window.addEventListener("offline",updateInternet);
+
+// DASHBOARD: AKKU
+async function initBattery() {
+  const field = document.getElementById("battery");
+  const sub = document.getElementById("batteryStatus");
+
+  if (!navigator.getBattery) {
+    field.textContent = "Nicht verfügbar";
+    sub.textContent = "Von diesem Browser nicht unterstützt";
+    return;
+  }
+
+  try {
+    batteryManager = await navigator.getBattery();
+
+    function updateBattery() {
+      field.textContent =
+        Math.round(batteryManager.level * 100) + "%";
+
+      sub.textContent = batteryManager.charging
+        ? "⚡ Wird geladen"
+        : "Wird nicht geladen";
+    }
+
+    updateBattery();
+    batteryManager.addEventListener("levelchange",updateBattery);
+    batteryManager.addEventListener("chargingchange",updateBattery);
+  } catch(error) {
+    field.textContent = "Nicht verfügbar";
+    sub.textContent = "Akkuabfrage nicht möglich";
+  }
+}
+
+// DASHBOARD: AUFGABEN
+function updateTaskDashboard() {
+  const open = tasks.filter(task => !task.done).length;
+  const done = tasks.filter(task => task.done).length;
+
+  document.getElementById("dashTasks").textContent = open;
+  document.getElementById("dashTasksSub").textContent =
+    done + " erledigt · " + open + " offen";
+}
 
 function loadData() {
   try {
@@ -326,6 +458,7 @@ function loadData() {
   applyTheme();
   renderTasks();
   renderHistory();
+  updateTaskDashboard();
 }
 
 function saveHistory() {
@@ -492,7 +625,6 @@ function renderTasks() {
     empty.className = "muted";
     empty.textContent = "Noch keine Aufgaben vorhanden.";
     list.appendChild(empty);
-    return;
   }
 
   tasks.forEach(task => {
@@ -524,6 +656,8 @@ function renderTasks() {
     row.append(checkbox,label,remove);
     list.appendChild(row);
   });
+
+  updateTaskDashboard();
 }
 
 function showTasks() {
@@ -588,6 +722,10 @@ document.getElementById("taskInput").addEventListener("keydown",event => {
 });
 
 loadData();
+updateClock();
+updateInternet();
+initBattery();
+setInterval(updateClock,1000);
 </script>
 </body>
 </html>
