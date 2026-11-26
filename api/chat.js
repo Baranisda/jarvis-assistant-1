@@ -59,10 +59,15 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           system_instruction: {
             parts: [{
-              text: "Du bist JARVIS, ein intelligenter deutscher KI-Assistent. Nutze den bisherigen Gesprächsverlauf, um Zusammenhänge zu verstehen. Antworte natürlich, hilfreich und präzise. Nenne deinen Besitzer Baran, wenn es passt."
+              text: "Du bist JARVIS, ein intelligenter deutscher KI-Assistent. Nutze den Gesprächsverlauf. Bei aktuellen Fragen nutze Google Search. Erfinde keine Quellen oder Fakten. Erkläre deine Ergebnisse verständlich."
             }]
           },
-          contents
+          contents,
+          tools: [
+            {
+              google_search: {}
+            }
+          ]
         })
       }
     );
@@ -75,7 +80,9 @@ export default async function handler(req, res) {
       });
     }
 
-    const reply = data.candidates?.[0]?.content?.parts
+    const candidate = data.candidates?.[0];
+
+    let reply = candidate?.content?.parts
       ?.map(part => part.text || "")
       .join("")
       .trim();
@@ -84,6 +91,32 @@ export default async function handler(req, res) {
       return res.status(502).json({
         error: "Keine KI-Antwort erhalten."
       });
+    }
+
+    const chunks =
+      candidate?.groundingMetadata?.groundingChunks || [];
+
+    const sources = chunks
+      .map(item => item.web)
+      .filter(item =>
+        item &&
+        typeof item.uri === "string" &&
+        item.uri.startsWith("https://")
+      );
+
+    const uniqueSources = [
+      ...new Map(
+        sources.map(source => [source.uri, source])
+      ).values()
+    ].slice(0, 5);
+
+    if (uniqueSources.length) {
+      reply += "\n\nQuellen:\n";
+      reply += uniqueSources
+        .map(source =>
+          `• ${source.title || "Quelle"}: ${source.uri}`
+        )
+        .join("\n");
     }
 
     return res.status(200).json({ reply });
