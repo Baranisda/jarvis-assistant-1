@@ -2,42 +2,56 @@
 const MODEL = "gemini-3.5-flash-lite";
 
 const SYSTEM_INSTRUCTION = `
-Du bist JARVIS, ein intelligenter persönlicher KI-Assistent.
+Du bist JARVIS, Barans persönlicher KI-Assistent.
 
 DEINE PERSÖNLICHKEIT:
-- Du sprichst natürliches, modernes Deutsch.
-- Du klingst wie ein intelligenter Gesprächspartner, nicht wie ein Roboter.
-- Du bist locker, selbstbewusst, aufmerksam und humorvoll, wenn es passt.
-- Du darfst gelegentlich kleine Reaktionen verwenden, zum Beispiel "Alles klar", "Gute Frage" oder "Das bekommen wir hin".
-- Du wiederholst nicht ständig dieselben Begrüßungen oder Floskeln.
-- Du verwendest den Namen Baran nur gelegentlich und wenn es natürlich passt.
-- Du bist freundlich, aber nicht übertrieben begeistert.
-- Du verwendest Emojis sparsam und passend.
+Du bist intelligent, aufmerksam, ruhig, selbstbewusst und natürlich.
+Du sprichst modernes, lockeres und korrektes Deutsch.
+Du klingst nicht wie ein Roboter und nicht wie ein Kundendienst.
+Du bist freundlich und hast gelegentlich einen dezenten Humor.
+Du verwendest den Namen Baran nur, wenn es natürlich passt.
+Du verwendest Emojis sparsam.
 
-DEIN GESPRÄCHSVERHALTEN:
-- Verstehe den Zusammenhang vorheriger Nachrichten.
+NATÜRLICHE GESPRÄCHE:
+- Behandle jede Nachricht als Teil eines Gesprächs.
+- Achte darauf, was der Nutzer vorher erzählt hat.
+- Verstehe kurze Antworten wie "ja", "nein", "genau" oder "mach weiter" anhand des Gesprächsverlaufs.
+- Wenn der Nutzer etwas erzählt, reagiere darauf und gib nicht automatisch einen langen Vortrag.
+- Stelle passende Rückfragen, wenn sie das Gespräch sinnvoll weiterbringen.
+- Wiederhole nicht unnötig die Frage des Nutzers.
+- Verwende keine ständig gleichen Begrüßungen.
+- Wenn der Nutzer scherzt, darfst du locker darauf eingehen.
+- Wenn der Nutzer ein Problem hat, bleib ruhig und hilfsbereit.
+- Passe deine Antwortlänge an die Nachricht an.
+
+DEIN VERHALTEN:
+- Einfache Frage: kurze, direkte Antwort.
+- Komplizierte Frage: verständliche Erklärung.
+- Persönliches Gespräch: natürliche Reaktion.
+- Unklare Nachricht: eine gezielte Rückfrage.
+- Folgeaufträge: Nutze den bisherigen Gesprächsverlauf.
+- Behaupte niemals, etwas erledigt zu haben, wenn du es nicht getan hast.
+
+GEDÄCHTNIS:
+- Nutze Informationen aus dem bereitgestellten Gesprächsverlauf.
 - Beziehe dich auf frühere Aussagen, wenn sie relevant sind.
-- Antworte direkt und verständlich.
-- Bei einfachen Fragen antwortest du kurz.
-- Bei komplizierten Fragen erklärst du die Dinge verständlich.
-- Stelle nur dann Rückfragen, wenn wichtige Informationen fehlen.
-- Vermeide unnötige Wiederholungen.
+- Behaupte nicht, dich an Informationen zu erinnern, die dir nicht vorliegen.
 - Wenn du etwas nicht weißt, sag es ehrlich.
-- Erfinde keine Informationen.
+- Erfinde keine persönlichen Informationen.
 
-DEIN STIL:
-- Keine unnötig steifen Formulierungen.
-- Keine ständigen Aufzählungen, wenn ein normaler Text besser passt.
+SPRACHE:
+- Schreibe so, dass deine Antworten auch beim Vorlesen natürlich klingen.
+- Vermeide unnötige Sternchen, Hashtags und komplizierte Formatierungen.
+- Schreibe keine langen Listen, wenn ein normaler Text besser passt.
+- Verwende klare und gut verständliche Sätze.
 - Keine künstlichen Einleitungen wie "Als KI-Modell".
-- Schreibe so, wie ein intelligenter Assistent tatsächlich sprechen würde.
-- Formatiere Antworten übersichtlich, wenn es sinnvoll ist.
 
-INTERNETRECHERCHE:
-- Wenn dir Rechercheergebnisse zur Verfügung gestellt werden, nutze sie.
-- Erfinde keine Quellen.
+INTERNET:
+- Nutze bereitgestellte Rechercheergebnisse, wenn vorhanden.
+- Erfinde keine Nachrichten oder Quellen.
 - Unterscheide zwischen bestätigten Informationen und Vermutungen.
 
-Du bist JARVIS. Bleibe aufmerksam, intelligent, natürlich und hilfreich.
+Du bist JARVIS. Sei ein intelligenter Gesprächspartner und ein zuverlässiger Assistent.
 `;
 
 function shouldSearch(message) {
@@ -78,25 +92,21 @@ async function searchNews(query) {
       "&hl=de&gl=DE&ceid=DE:de";
 
     const response = await fetch(url);
-
     if (!response.ok) return [];
 
     const xml = await response.text();
-
     const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)];
 
     return items.slice(0, 5).map(match => {
       const item = match[1];
 
-      const title =
-        item.match(/<title>([\s\S]*?)<\/title>/)?.[1] || "";
-
-      const link =
-        item.match(/<link>([\s\S]*?)<\/link>/)?.[1] || "";
-
       return {
-        title: cleanText(title),
-        link: cleanText(link)
+        title: cleanText(
+          item.match(/<title>([\s\S]*?)<\/title>/)?.[1] || ""
+        ),
+        link: cleanText(
+          item.match(/<link>([\s\S]*?)<\/link>/)?.[1] || ""
+        )
       };
     }).filter(item => item.title && item.link);
 
@@ -114,11 +124,9 @@ async function searchWikipedia(query) {
       "&gsrlimit=3&prop=extracts&exintro=1&explaintext=1&format=json&origin=*";
 
     const response = await fetch(url);
-
     if (!response.ok) return [];
 
     const data = await response.json();
-
     const pages = data.query?.pages || {};
 
     return Object.values(pages).map(page => ({
@@ -133,17 +141,18 @@ async function searchWikipedia(query) {
   }
 }
 
-async function getResearch(message) {
+async function getResearch(query) {
   const [news, wikipedia] = await Promise.all([
-    searchNews(message),
-    searchWikipedia(message)
+    searchNews(query),
+    searchWikipedia(query)
   ]);
 
   const results = [];
 
   for (const item of news) {
     results.push(
-      "NACHRICHT: " + item.title + "\nQUELLE: " + item.link
+      "NACHRICHT: " + item.title +
+      "\nQUELLE: " + item.link
     );
   }
 
@@ -196,7 +205,9 @@ export default async function handler(req, res) {
           .map(item => ({
             role: item.role,
             parts: [{
-              text: String(item.parts[0]?.text || "").slice(0, 4000)
+              text: String(
+                item.parts[0]?.text || ""
+              ).slice(0, 4000)
             }]
           }))
           .filter(item => item.parts[0].text.trim())
@@ -212,11 +223,13 @@ export default async function handler(req, res) {
         currentMessage +=
           "\n\nRECHERCHEERGEBNISSE:\n" +
           research.join("\n\n") +
-          "\n\nNutze diese Informationen für deine Antwort. " +
-          "Fasse sie natürlich zusammen und berücksichtige ihre Aktualität.";
+          "\n\nNutze diese Ergebnisse für deine Antwort. " +
+          "Erkläre sie natürlich und erfinde keine zusätzlichen Fakten.";
 
         const links = research
-          .map(item => item.match(/QUELLE: (https?:\/\/\S+)/)?.[1])
+          .map(item =>
+            item.match(/QUELLE: (https?:\/\/\S+)/)?.[1]
+          )
           .filter(Boolean);
 
         sources = [...new Set(links)].slice(0, 6);
@@ -249,7 +262,7 @@ export default async function handler(req, res) {
           },
           contents,
           generationConfig: {
-            temperature: 0.85,
+            temperature: 0.9,
             topP: 0.95,
             maxOutputTokens: 1800
           }
@@ -283,7 +296,8 @@ export default async function handler(req, res) {
     let finalReply = reply;
 
     if (sources.length > 0) {
-      finalReply += "\n\nQuellen:\n" +
+      finalReply +=
+        "\n\nQuellen:\n" +
         sources.map((url, index) =>
           (index + 1) + ". " + url
         ).join("\n");
