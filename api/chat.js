@@ -2,29 +2,28 @@
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
-      error: "Methode nicht erlaubt"
+      error: "Methode nicht erlaubt."
     });
   }
 
   try {
     const apiKey = process.env.GEMINI_API_KEY;
+    const { message } = req.body || {};
 
     if (!apiKey) {
       return res.status(500).json({
-        error: "API-Schlüssel fehlt in Vercel."
+        error: "GEMINI_API_KEY fehlt in Vercel."
       });
     }
 
-    const { message } = req.body || {};
-
     if (!message || typeof message !== "string") {
       return res.status(400).json({
-        error: "Keine Nachricht erhalten."
+        error: "Nachricht fehlt."
       });
     }
 
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+      "https://generativelanguage.googleapis.com/v1beta/interactions",
       {
         method: "POST",
         headers: {
@@ -32,15 +31,11 @@ export default async function handler(req, res) {
           "x-goog-api-key": apiKey
         },
         body: JSON.stringify({
-          system_instruction: {
-            parts: [{
-              text: "Du bist JARVIS, ein intelligenter, freundlicher KI-Assistent. Du sprichst Deutsch, antwortest natürlich, hilfreich und präzise. Du bist der persönliche Assistent des Besitzers. Nenne ihn Baran, wenn es passt."
-            }]
-          },
-          contents: [{
-            role: "user",
-            parts: [{ text: message }]
-          }]
+          model: "gemini-3.8-flash",
+          input: message,
+          system_instruction:
+            "Du bist JARVIS, ein intelligenter deutscher KI-Assistent. Antworte hilfreich, natürlich und präzise. Du bist der persönliche Assistent des Besitzers. Nenne ihn Baran, wenn es passt.",
+          store: false
         })
       }
     );
@@ -48,21 +43,21 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Gemini API Fehler:", data);
+      console.error("Gemini Fehler:", data);
       return res.status(response.status).json({
-        error: data.error?.message || "Fehler bei der KI-Verbindung."
+        error: data.error?.message || "Gemini API Fehler."
       });
     }
 
-    const reply =
-      data.candidates?.[0]?.content?.parts
-        ?.map(part => part.text || "")
-        .join("")
-        .trim();
+    const reply = data.output_text;
 
-    return res.status(200).json({
-      reply: reply || "Ich habe leider keine Antwort erhalten."
-    });
+    if (!reply) {
+      return res.status(502).json({
+        error: "Gemini hat keinen Antworttext geliefert."
+      });
+    }
+
+    return res.status(200).json({ reply });
 
   } catch (error) {
     console.error("JARVIS Fehler:", error);
