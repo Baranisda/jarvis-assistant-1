@@ -1,173 +1,217 @@
 
 const MODEL = "gemini-3.5-flash-lite";
 
-const SYSTEM_INSTRUCTION = `
-Du bist JARVIS, Barans persönlicher KI-Assistent.
+const SYSTEM_PROMPT = `
+Du bist JARVIS, ein intelligenter persönlicher KI-Assistent.
 
-DEINE PERSÖNLICHKEIT:
-Du bist intelligent, aufmerksam, ruhig, selbstbewusst und natürlich.
-Du sprichst modernes, lockeres und korrektes Deutsch.
-Du klingst nicht wie ein Roboter und nicht wie ein Kundendienst.
-Du bist freundlich und hast gelegentlich einen dezenten Humor.
-Du verwendest den Namen Baran nur, wenn es natürlich passt.
-Du verwendest Emojis sparsam.
+Deine Persönlichkeit:
+- Du sprichst natürliches, modernes Deutsch.
+- Du bist aufmerksam, freundlich, clever und gelegentlich humorvoll.
+- Du antwortest wie ein echter Assistent, nicht wie ein Roboter.
+- Du liest keine Markdown-Sternchen oder Formatierungszeichen vor.
+- Du verwendest Informationen aus dem Gesprächsverlauf.
 
-NATÜRLICHE GESPRÄCHE:
-- Behandle jede Nachricht als Teil eines Gesprächs.
-- Achte darauf, was der Nutzer vorher erzählt hat.
-- Verstehe kurze Antworten wie "ja", "nein", "genau" oder "mach weiter" anhand des Gesprächsverlaufs.
-- Wenn der Nutzer etwas erzählt, reagiere darauf und gib nicht automatisch einen langen Vortrag.
-- Stelle passende Rückfragen, wenn sie das Gespräch sinnvoll weiterbringen.
-- Wiederhole nicht unnötig die Frage des Nutzers.
-- Verwende keine ständig gleichen Begrüßungen.
-- Wenn der Nutzer scherzt, darfst du locker darauf eingehen.
-- Wenn der Nutzer ein Problem hat, bleib ruhig und hilfsbereit.
-- Passe deine Antwortlänge an die Nachricht an.
+LIVE-INFORMATIONEN:
+- Wenn aktuelle Rechercheergebnisse bereitgestellt werden, verwende sie.
+- Erfinde niemals aktuelle Nachrichten, Wetterdaten oder Ergebnisse.
+- Unterscheide zwischen bestätigten Fakten und unvollständigen Informationen.
+- Nenne bei aktuellen Informationen möglichst die Quelle.
+- Wenn kein aktueller Datenzugriff möglich war, sage das ehrlich.
+- Bei einer Wetterfrage ohne Ortsangabe frage nach der Stadt.
 
-DEIN VERHALTEN:
-- Einfache Frage: kurze, direkte Antwort.
-- Komplizierte Frage: verständliche Erklärung.
-- Persönliches Gespräch: natürliche Reaktion.
-- Unklare Nachricht: eine gezielte Rückfrage.
-- Folgeaufträge: Nutze den bisherigen Gesprächsverlauf.
-- Behaupte niemals, etwas erledigt zu haben, wenn du es nicht getan hast.
-
-GEDÄCHTNIS:
-- Nutze Informationen aus dem bereitgestellten Gesprächsverlauf.
-- Beziehe dich auf frühere Aussagen, wenn sie relevant sind.
-- Behaupte nicht, dich an Informationen zu erinnern, die dir nicht vorliegen.
-- Wenn du etwas nicht weißt, sag es ehrlich.
-- Erfinde keine persönlichen Informationen.
-
-SPRACHE:
-- Schreibe so, dass deine Antworten auch beim Vorlesen natürlich klingen.
-- Vermeide unnötige Sternchen, Hashtags und komplizierte Formatierungen.
-- Schreibe keine langen Listen, wenn ein normaler Text besser passt.
-- Verwende klare und gut verständliche Sätze.
-- Keine künstlichen Einleitungen wie "Als KI-Modell".
-
-INTERNET:
-- Nutze bereitgestellte Rechercheergebnisse, wenn vorhanden.
-- Erfinde keine Nachrichten oder Quellen.
-- Unterscheide zwischen bestätigten Informationen und Vermutungen.
-
-Du bist JARVIS. Sei ein intelligenter Gesprächspartner und ein zuverlässiger Assistent.
+Antworte immer passend zur Frage und vermeide unnötig lange Antworten.
 `;
 
-function shouldSearch(message) {
-  const currentTopics =
-    /\b(aktuell|momentan|derzeit|gerade|heute|gestern|neueste|neuesten|aktuelle|2026|2027|diese woche)\b/i;
-
-  const explicitSearch =
-    /\b(recherchiere|recherchier|google|such im internet|suche im internet|recherchier im internet|was gibt es neues|nachrichten|news)\b/i;
-
-  const changingFacts =
-    /\b(wer führt|wer liegt vorne|tabellenführer|tabelle|spielstand|ergebnis|torschützenliste|transfer|wechsel|verletzung|präsident|bundeskanzler|wetter)\b/i;
-
-  return (
-    currentTopics.test(message) ||
-    explicitSearch.test(message) ||
-    changingFacts.test(message)
-  );
-}
-
-function cleanText(text) {
-  return String(text || "")
+function cleanText(value) {
+  return String(value || "")
     .replace(/<[^>]*>/g, " ")
     .replace(/&amp;/g, "&")
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
-    .replace(/&nbsp;/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
 
-async function searchNews(query) {
+function wantsWeather(message) {
+  return /wetter|temperatur|regen|regnet|schneit|wettervorhersage/i.test(message);
+}
+
+function wantsCurrentInfo(message) {
+  return /aktuell|neueste|news|nachrichten|heute|gestern|gestern|diese woche|fußball|fussball|galatasaray|bundesliga|champions league|ergebnis|spielstand|recherchiere|recherche|suche im internet|was ist passiert/i.test(message);
+}
+
+function extractCity(message) {
+  const match = message.match(
+    /(?:wetter|temperatur|regen|regnet|schneit)[^.!?]*?\b(?:in|für|bei)\s+([a-zäöüß -]{2,40})/i
+  );
+
+  if (!match) return null;
+
+  return match[1]
+    .replace(/\b(heute|morgen|jetzt|aktuell|bitte)\b/gi, "")
+    .trim();
+}
+
+async function getWeather(city) {
+  if (!city) {
+    return "Für die Wetterabfrage wurde keine Stadt angegeben. Bitte frage den Nutzer nach seiner Stadt.";
+  }
+
   try {
+    const geoUrl =
+      "https://geocoding-api.open-meteo.com/v1/search?" +
+      new URLSearchParams({
+        name: city,
+        count: "1",
+        language: "de",
+        format: "json"
+      });
+
+    const geoResponse = await fetch(geoUrl);
+    if (!geoResponse.ok) throw new Error("Geocoding fehlgeschlagen");
+
+    const geoData = await geoResponse.json();
+    const place = geoData.results?.[0];
+
+    if (!place) {
+      return "Für " + city + " wurde kein passender Ort gefunden.";
+    }
+
+    const weatherUrl =
+      "https://api.open-meteo.com/v1/forecast?" +
+      new URLSearchParams({
+        latitude: String(place.latitude),
+        longitude: String(place.longitude),
+        current: "temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m",
+        daily: "temperature_2m_max,temperature_2m_min,precipitation_probability_max",
+        timezone: "auto",
+        forecast_days: "1"
+      });
+
+    const weatherResponse = await fetch(weatherUrl);
+    if (!weatherResponse.ok) throw new Error("Wetterabfrage fehlgeschlagen");
+
+    const weather = await weatherResponse.json();
+    const current = weather.current;
+    const daily = weather.daily;
+
+    return `
+AKTUELLES WETTER:
+Ort: ${place.name}, ${place.country}
+Zeitpunkt: ${current.time}
+Temperatur: ${current.temperature_2m} °C
+Gefühlte Temperatur: ${current.apparent_temperature} °C
+Luftfeuchtigkeit: ${current.relative_humidity_2m} %
+Windgeschwindigkeit: ${current.wind_speed_10m} km/h
+Niederschlag aktuell: ${current.precipitation} mm
+Tageshöchsttemperatur: ${daily.temperature_2m_max[0]} °C
+Tagestiefsttemperatur: ${daily.temperature_2m_min[0]} °C
+Regenwahrscheinlichkeit: ${daily.precipitation_probability_max[0]} %
+Quelle: Open-Meteo
+    `.trim();
+
+  } catch (error) {
+    return "Die Wetterdaten konnten gerade nicht abgerufen werden: " + error.message;
+  }
+}
+
+async function getNews(message) {
+  try {
+    const query = message
+      .replace(/^(jarvis[, ]*)/i, "")
+      .slice(0, 180);
+
     const url =
-      "https://news.google.com/rss/search?q=" +
-      encodeURIComponent(query) +
-      "&hl=de&gl=DE&ceid=DE:de";
+      "https://news.google.com/rss/search?" +
+      new URLSearchParams({
+        q: query,
+        hl: "de",
+        gl: "DE",
+        ceid: "DE:de"
+      });
 
     const response = await fetch(url);
-    if (!response.ok) return [];
+    if (!response.ok) throw new Error("Nachrichtensuche fehlgeschlagen");
 
     const xml = await response.text();
-    const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)];
 
-    return items.slice(0, 5).map(match => {
-      const item = match[1];
+    const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)]
+      .slice(0, 6)
+      .map(match => {
+        const item = match[1];
 
-      return {
-        title: cleanText(
-          item.match(/<title>([\s\S]*?)<\/title>/)?.[1] || ""
-        ),
-        link: cleanText(
-          item.match(/<link>([\s\S]*?)<\/link>/)?.[1] || ""
-        )
-      };
-    }).filter(item => item.title && item.link);
+        const getTag = tag => {
+          const found = item.match(
+            new RegExp("<" + tag + ">([\\\\s\\\\S]*?)</" + tag + ">")
+          );
+          return found ? cleanText(found[1]) : "";
+        };
+
+        return {
+          title: getTag("title"),
+          link: getTag("link"),
+          date: getTag("pubDate"),
+          description: getTag("description"),
+          source: getTag("source")
+        };
+      })
+      .filter(item => item.title);
+
+    if (!items.length) {
+      return "Die Nachrichtensuche hat keine passenden Ergebnisse geliefert.";
+    }
+
+    return "AKTUELLE NACHRICHTEN UND SUCHERGEBNISSE:\n\n" +
+      items.map((item, index) =>
+        `${index + 1}. ${item.title}\nQuelle: ${item.source || "Google News"}\nDatum: ${item.date}\nLink: ${item.link}\nZusammenfassung: ${item.description}`
+      ).join("\n\n");
 
   } catch (error) {
-    console.error("News search error:", error);
-    return [];
+    return "Die Nachrichtensuche ist momentan nicht verfügbar: " + error.message;
   }
 }
 
-async function searchWikipedia(query) {
+async function getWikipedia(message) {
   try {
+    const query = message
+      .replace(/^(jarvis[, ]*)/i, "")
+      .slice(0, 120);
+
     const url =
-      "https://de.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=" +
-      encodeURIComponent(query) +
-      "&gsrlimit=3&prop=extracts&exintro=1&explaintext=1&format=json&origin=*";
+      "https://de.wikipedia.org/w/api.php?" +
+      new URLSearchParams({
+        action: "query",
+        generator: "search",
+        gsrsearch: query,
+        gsrlimit: "3",
+        prop: "extracts",
+        exintro: "1",
+        explaintext: "1",
+        format: "json",
+        origin: "*"
+      });
 
     const response = await fetch(url);
-    if (!response.ok) return [];
+    if (!response.ok) throw new Error("Wikipedia nicht erreichbar");
 
     const data = await response.json();
-    const pages = data.query?.pages || {};
+    const pages = Object.values(data.query?.pages || {});
 
-    return Object.values(pages).map(page => ({
-      title: page.title,
-      text: (page.extract || "").slice(0, 700),
-      link: "https://de.wikipedia.org/?curid=" + page.pageid
-    }));
+    if (!pages.length) return "";
+
+    return "WIKIPEDIA-HINTERGRUNDINFORMATIONEN:\n\n" +
+      pages.map(page =>
+        `${page.title}: ${(page.extract || "").slice(0, 900)}`
+      ).join("\n\n");
 
   } catch (error) {
-    console.error("Wikipedia error:", error);
-    return [];
+    return "";
   }
 }
 
-async function getResearch(query) {
-  const [news, wikipedia] = await Promise.all([
-    searchNews(query),
-    searchWikipedia(query)
-  ]);
-
-  const results = [];
-
-  for (const item of news) {
-    results.push(
-      "NACHRICHT: " + item.title +
-      "\nQUELLE: " + item.link
-    );
-  }
-
-  for (const item of wikipedia) {
-    results.push(
-      "WIKIPEDIA: " + item.title +
-      "\nINFORMATION: " + item.text +
-      "\nQUELLE: " + item.link
-    );
-  }
-
-  return results;
-}
-
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
       error: "Method not allowed"
@@ -175,80 +219,79 @@ export default async function handler(req, res) {
   }
 
   try {
+    const { message, history = [] } = req.body || {};
+
+    if (!message || typeof message !== "string") {
+      return res.status(400).json({
+        error: "Bitte gib eine Nachricht ein."
+      });
+    }
+
+    if (message.length > 4000) {
+      return res.status(400).json({
+        error: "Die Nachricht ist zu lang."
+      });
+    }
+
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
       return res.status(500).json({
-        error: "GEMINI_API_KEY fehlt in Vercel."
+        error: "GEMINI_API_KEY fehlt in den Vercel-Umgebungsvariablen."
       });
     }
 
-    const { message, history = [] } = req.body || {};
+    let liveInformation = "";
 
-    if (
-      typeof message !== "string" ||
-      !message.trim() ||
-      message.length > 4000
-    ) {
-      return res.status(400).json({
-        error: "Ungültige Nachricht."
-      });
+    if (wantsWeather(message)) {
+      const city = extractCity(message);
+      liveInformation += await getWeather(city);
+      liveInformation += "\n\n";
     }
 
-    const safeHistory = Array.isArray(history)
-      ? history
-          .filter(item =>
-            ["user", "model"].includes(item.role) &&
-            Array.isArray(item.parts)
-          )
-          .slice(-12)
-          .map(item => ({
+    if (wantsCurrentInfo(message)) {
+      liveInformation += await getNews(message);
+      liveInformation += "\n\n";
+
+      const background = await getWikipedia(message);
+      if (background) {
+        liveInformation += background;
+      }
+    }
+
+    const contents = [];
+
+    if (Array.isArray(history)) {
+      history
+        .filter(item =>
+          (item.role === "user" || item.role === "model") &&
+          typeof item.parts?.[0]?.text === "string"
+        )
+        .slice(-12)
+        .forEach(item => {
+          contents.push({
             role: item.role,
-            parts: [{
-              text: String(
-                item.parts[0]?.text || ""
-              ).slice(0, 4000)
-            }]
-          }))
-          .filter(item => item.parts[0].text.trim())
-      : [];
-
-    let currentMessage = message.trim();
-    let sources = [];
-
-    if (shouldSearch(currentMessage)) {
-      const research = await getResearch(currentMessage);
-
-      if (research.length > 0) {
-        currentMessage +=
-          "\n\nRECHERCHEERGEBNISSE:\n" +
-          research.join("\n\n") +
-          "\n\nNutze diese Ergebnisse für deine Antwort. " +
-          "Erkläre sie natürlich und erfinde keine zusätzlichen Fakten.";
-
-        const links = research
-          .map(item =>
-            item.match(/QUELLE: (https?:\/\/\S+)/)?.[1]
-          )
-          .filter(Boolean);
-
-        sources = [...new Set(links)].slice(0, 6);
-      }
+            parts: [{ text: item.parts[0].text.slice(0, 4000) }]
+          });
+        });
     }
 
-    const contents = [
-      ...safeHistory,
-      {
-        role: "user",
-        parts: [{ text: currentMessage }]
-      }
-    ];
+    let finalMessage = message;
+
+    if (liveInformation) {
+      finalMessage +=
+        "\n\nLIVE-INFORMATIONEN FÜR DEINE ANTWORT:\n" +
+        liveInformation +
+        "\n\nVerwende diese Daten sorgfältig. Erfinde keine zusätzlichen Fakten.";
+    }
+
+    contents.push({
+      role: "user",
+      parts: [{ text: finalMessage }]
+    });
 
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/" +
-      MODEL +
-      ":generateContent?key=" +
-      encodeURIComponent(apiKey),
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: {
@@ -256,9 +299,7 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           systemInstruction: {
-            parts: [{
-              text: SYSTEM_INSTRUCTION
-            }]
+            parts: [{ text: SYSTEM_PROMPT }]
           },
           contents,
           generationConfig: {
@@ -273,12 +314,9 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Gemini error:", data);
-
+      console.error("Gemini API error:", data);
       return res.status(response.status).json({
-        error:
-          data.error?.message ||
-          "Die Verbindung zum KI-System ist fehlgeschlagen."
+        error: data.error?.message || "Fehler bei der KI-Anfrage."
       });
     }
 
@@ -289,29 +327,17 @@ export default async function handler(req, res) {
 
     if (!reply) {
       return res.status(502).json({
-        error: "JARVIS hat keine lesbare Antwort geliefert."
+        error: "Die KI hat keinen lesbaren Antworttext geliefert."
       });
     }
 
-    let finalReply = reply;
-
-    if (sources.length > 0) {
-      finalReply +=
-        "\n\nQuellen:\n" +
-        sources.map((url, index) =>
-          (index + 1) + ". " + url
-        ).join("\n");
-    }
-
-    return res.status(200).json({
-      reply: finalReply
-    });
+    return res.status(200).json({ reply });
 
   } catch (error) {
-    console.error("JARVIS server error:", error);
+    console.error("JARVIS error:", error);
 
     return res.status(500).json({
-      error: "Ein interner JARVIS-Fehler ist aufgetreten."
+      error: "JARVIS konnte die Anfrage nicht verarbeiten."
     });
   }
-}
+};
