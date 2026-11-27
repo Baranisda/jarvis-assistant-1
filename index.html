@@ -9,17 +9,15 @@
 <style>
 :root{--accent:#e5b957;--accent2:#fff0bd;--glow:rgba(229,185,87,.3);--listen:#56c8ff;--panel:rgba(16,19,27,.82);--panel2:rgba(25,29,39,.88);--text:#f4f4f7;--muted:#858d9e;--border:rgba(255,255,255,.09);--radius:22px}
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;color:var(--text);background:radial-gradient(ellipse at 50% -20%,var(--glow),transparent 50%),#07090e;font-family:Arial,Helvetica,sans-serif;overflow-x:hidden;transition:background .5s,color .3s}
+body{margin:0;min-height:100vh;color:var(--text);background:radial-gradient(ellipse at 50% -20%,var(--glow),transparent 50%),#07090e;font-family:Arial,Helvetica,sans-serif;overflow-x:hidden;transition:background .5s}
 body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:45px 45px;mask-image:linear-gradient(to bottom,black,transparent 85%)}
 body[data-mode="iron"]{--accent:#f0a94c;--accent2:#ffe0a2;--glow:rgba(255,75,35,.28);--panel:rgba(30,16,16,.88);--panel2:rgba(45,22,22,.92);--border:rgba(255,130,80,.2);background:radial-gradient(ellipse at 50% 35%,rgba(255,70,30,.2),transparent 55%),linear-gradient(145deg,#160b0b,#08090d 65%)}
-body[data-mode="ultron"]{--accent:#e64b55;--accent2:#ffb5b5;--glow:rgba(255,35,48,.3);--panel:rgba(20,21,26,.9);--panel2:rgba(35,35,42,.94);--border:rgba(255,70,80,.2);background:radial-gradient(ellipse at 50% 35%,rgba(220,30,45,.18),transparent 55%),linear-gradient(145deg,#17191e,#08090d)}
+body[data-mode="ultron"]{--accent:#e64b55;--accent2:#ffb5b5;--glow:rgba(255,35,48,.3);--panel:rgba(20,21,26,.9);--panel2:rgba(35,35,42,.94);--border:rgba(255,70,80,.2);background:radial-gradient(ellipse at 50% 35%,rgba(220,30,45,.18),transparent 55%),#08090d}
 body[data-mode="hologram"]{--accent:#55baff;--accent2:#c9edff;--glow:rgba(50,160,255,.3);--panel:rgba(10,22,38,.85);--panel2:rgba(15,35,55,.92);--border:rgba(85,180,255,.2);background:radial-gradient(ellipse at 50% 35%,rgba(30,130,255,.22),transparent 60%),#060b13}
 body[data-mode="plasma"]{--accent:#b28aff;--accent2:#e8d9ff;--glow:rgba(150,80,255,.3);--panel:rgba(25,15,40,.85);--panel2:rgba(39,23,60,.92);--border:rgba(180,120,255,.2);background:radial-gradient(ellipse at 50% 35%,rgba(130,50,255,.22),transparent 60%),#090710}
 body[data-mode="android"]{--accent:#c6d6e5;--accent2:#fff;--glow:rgba(180,210,240,.25);--panel:rgba(18,25,32,.88);--panel2:rgba(30,40,50,.92);--border:rgba(200,225,255,.2);background:radial-gradient(ellipse at 50% 35%,rgba(170,210,245,.17),transparent 60%),#080b10}
-body[data-mode="classic"]{--accent:#e5b957;--accent2:#fff0bd;--glow:rgba(229,185,87,.3);--panel:rgba(16,19,27,.82);--panel2:rgba(25,29,39,.88);--border:rgba(255,255,255,.09)}
 body[data-mode="hulk"]{--accent:#63f542;--accent2:#d5ffc9;--glow:rgba(70,255,35,.38);--panel:rgba(10,30,12,.9);--panel2:rgba(16,45,19,.94);--border:rgba(90,255,60,.25);background:radial-gradient(ellipse at 50% 35%,rgba(55,255,25,.25),transparent 60%),#030904}
 body[data-mode="hulk"] .core{background:radial-gradient(circle,#fff 0%,#8cff58 25%,#176b19 75%);box-shadow:0 0 35px #65ff35,0 0 100px rgba(70,255,35,.6)}
-body[data-mode="hulk"] .reactor:before{border-width:2px;box-shadow:0 0 18px #63f542}
 body[data-bg="blue"]{background:radial-gradient(ellipse at top,#142945,#07090e 70%)}
 body[data-bg="space"]{background:radial-gradient(ellipse at 20% 0%,#302347,#07090e 70%)}
 body[data-bg="black"]{background:#050608}
@@ -35,7 +33,6 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px;ma
 .icon-btn,.secondary,.primary{border:1px solid var(--border);border-radius:13px;padding:11px 15px;background:var(--panel2);color:var(--text);transition:.2s}
 .icon-btn:hover,.secondary:hover{border-color:var(--accent);box-shadow:0 0 15px var(--glow)}
 .primary{background:linear-gradient(135deg,var(--accent),#987337);color:#111;border:0;font-weight:bold}.primary:disabled{opacity:.5;cursor:wait}
-body[data-mode="hulk"] .primary{background:linear-gradient(135deg,#a4ff75,#35a51c)}
 .panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px;backdrop-filter:blur(16px);box-shadow:0 15px 40px rgba(0,0,0,.2);position:relative;overflow:hidden}
 .hero{display:grid;grid-template-columns:1.35fr .65fr;gap:16px;margin-bottom:16px}
 .hero-main{min-height:365px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
@@ -151,6 +148,7 @@ body[data-mode="android"] .core{background:radial-gradient(circle,#fff 0%,#c6d6e
   </div>
   <div>
    <div class="field"><label>SPRACHSTIMME</label><select id="voiceSelect"><option value="">Automatische deutsche Stimme</option></select></div>
+   <div class="actions" style="margin-top:-5px;margin-bottom:15px"><button class="secondary" id="testVoice">🎙 STIMME TESTEN</button></div>
    <div class="field"><label>SPRECHGESCHWINDIGKEIT · <span id="speedValue">1.00</span></label><input type="range" id="speedRange" min=".65" max="1.25" step=".05" value="1"></div>
    <div class="field"><label>ANTWORTLÄNGE</label><select id="answerStyle"><option value="normal">Normal</option><option value="short">Kurz</option><option value="detailed">Ausführlich</option></select></div>
    <div class="field"><label>SCHRIFTGRÖSSE</label><select id="fontSize"><option value="14">Normal</option><option value="15">Groß</option><option value="13">Klein</option></select></div>
@@ -176,264 +174,613 @@ body[data-mode="android"] .core{background:radial-gradient(circle,#fff 0%,#c6d6e
 "use strict";
 const $=id=>document.getElementById(id);
 const COLORS={gold:"#e5b957",blue:"#55aaff",violet:"#a78bfa",green:"#55d69a",red:"#ff6b75",cyan:"#48dce8"};
+
 const MODES={
- classic:{name:"CLASSIC JARVIS",short:"JARVIS",symbol:"◈",greeting:"SYSTEM BEREIT",sub:"Warte auf Anweisung",color:"#e5b957",glow:"rgba(229,185,87,.3)",description:"Das originale goldene JARVIS-Kontrollzentrum.",tone:"Du bist JARVIS. Sprich freundlich, intelligent, höflich und natürlich."},
- iron:{name:"IRON MODE",short:"IRON",symbol:"✦",greeting:"ANZUGSYSTEM AKTIV",sub:"Rüstung und Systeme bereit",color:"#f0a94c",glow:"rgba(255,75,35,.3)",description:"Rot-goldene Rüstungsoptik mit Reaktor-Feeling.",tone:"Du bist ein futuristischer Assistent im Iron-Man-inspirierten Stil. Sei schlagfertig, clever und selbstbewusst, aber hilfreich."},
- ultron:{name:"ULTRON MODE",short:"ULTRON",symbol:"◉",greeting:"ULTRON ONLINE",sub:"Systemüberwachung aktiv",color:"#e64b55",glow:"rgba(255,35,48,.3)",description:"Silbernes KI-Design, rote Energie und tieferer Sprachklang.",tone:"Du bist eine fiktive, kühl und ruhig sprechende KI namens Ultron. Verwende kurze, präzise, leicht dramatische Sätze und trockenen Humor. Bleibe freundlich und hilfreich. Keine Drohungen."},
- hologram:{name:"HOLOGRAM MODE",short:"HOLOGRAM",symbol:"◇",greeting:"HOLOGRAMM AKTIV",sub:"Projektion stabil",color:"#55baff",glow:"rgba(50,160,255,.3)",description:"Blaues Hologramm mit futuristischer Projektion.",tone:"Du bist ein holografischer Hightech-Assistent. Sprich klar, ruhig und futuristisch."},
- plasma:{name:"PLASMA MODE",short:"PLASMA",symbol:"✧",greeting:"PLASMAKERN AKTIV",sub:"Energiefluss stabil",color:"#b28aff",glow:"rgba(150,80,255,.3)",description:"Violetter Plasmakern mit pulsierenden Energieeffekten.",tone:"Du bist ein futuristischer Plasma-KI-Assistent. Sprich dynamisch, positiv und intelligent."},
- android:{name:"ANDROID MODE",short:"ANDROID",symbol:"⬡",greeting:"ANDROID SYSTEM AKTIV",sub:"Alle Systeme bereit",color:"#c6d6e5",glow:"rgba(180,210,240,.25)",description:"Silber-weißes Android-Interface mit cleanem Look.",tone:"Du bist ein präziser Android-Assistent. Sprich sachlich, ruhig und effizient."},
- hulk:{name:"HULK MODE",short:"HULK",symbol:"💚",greeting:"HULK SYSTEM AKTIV",sub:"GAMMA-ENERGIE STABIL",color:"#63f542",glow:"rgba(70,255,35,.38)",description:"Grüner Gamma-Reaktor mit kraftvoller Stimme.",tone:"Du bist HULK, ein kraftvoller, aber freundlicher KI-Assistent. Sprich in kurzen, direkten und selbstbewussten Sätzen. Verwende gelegentlich humorvolle Hulk-Ausdrücke, aber bleibe verständlich, respektvoll und hilfreich."}
+classic:{name:"CLASSIC JARVIS",short:"JARVIS",symbol:"◈",greeting:"SYSTEM BEREIT",sub:"Warte auf Anweisung",color:"#e5b957",glow:"rgba(229,185,87,.3)",description:"Das originale goldene JARVIS-Kontrollzentrum.",tone:"Du bist JARVIS. Sprich freundlich, intelligent, höflich und natürlich."},
+iron:{name:"IRON MODE",short:"IRON",symbol:"✦",greeting:"ANZUGSYSTEM AKTIV",sub:"Rüstung und Systeme bereit",color:"#f0a94c",glow:"rgba(255,75,35,.3)",description:"Rot-goldene Rüstungsoptik mit Reaktor-Feeling.",tone:"Du bist ein futuristischer Assistent im Iron-Man-inspirierten Stil. Sei schlagfertig, clever und selbstbewusst, aber hilfreich."},
+ultron:{name:"ULTRON MODE",short:"ULTRON",symbol:"◉",greeting:"ULTRON ONLINE",sub:"Systemüberwachung aktiv",color:"#e64b55",glow:"rgba(255,35,48,.3)",description:"Silbernes KI-Design, rote Energie und tieferer Sprachklang.",tone:"Du bist eine fiktive, kühl und ruhig sprechende KI namens Ultron. Verwende kurze, präzise, leicht dramatische Sätze und trockenen Humor. Bleibe freundlich und hilfreich. Keine Drohungen."},
+hologram:{name:"HOLOGRAM MODE",short:"HOLOGRAM",symbol:"◇",greeting:"HOLOGRAMM AKTIV",sub:"Projektion stabil",color:"#55baff",glow:"rgba(50,160,255,.3)",description:"Blaues Hologramm mit futuristischer Projektion.",tone:"Du bist ein holografischer Hightech-Assistent. Sprich klar, ruhig und futuristisch."},
+plasma:{name:"PLASMA MODE",short:"PLASMA",symbol:"✧",greeting:"PLASMAKERN AKTIV",sub:"Energiefluss stabil",color:"#b28aff",glow:"rgba(150,80,255,.3)",description:"Violetter Plasmakern mit pulsierenden Energieeffekten.",tone:"Du bist ein futuristischer Plasma-KI-Assistent. Sprich dynamisch, positiv und intelligent."},
+android:{name:"ANDROID MODE",short:"ANDROID",symbol:"⬡",greeting:"ANDROID SYSTEM AKTIV",sub:"Alle Systeme bereit",color:"#c6d6e5",glow:"rgba(180,210,240,.25)",description:"Silber-weißes Android-Interface mit cleanem Look.",tone:"Du bist ein präziser Android-Assistent. Sprich sachlich, ruhig und effizient."},
+hulk:{name:"HULK MODE",short:"HULK",symbol:"💚",greeting:"HULK SYSTEM AKTIV",sub:"GAMMA-ENERGIE STABIL",color:"#63f542",glow:"rgba(70,255,35,.38)",description:"Grüner Gamma-Reaktor mit kraftvoller Stimme.",tone:"Du bist HULK, ein kraftvoller, aber freundlicher KI-Assistent. Sprich in kurzen, direkten und selbstbewussten Sätzen. Verwende gelegentlich humorvolle Hulk-Ausdrücke, aber bleibe verständlich, respektvoll und hilfreich."}
 };
+
+/* Jedes Profil verändert Tonhöhe und Tempo der Browserstimme. */
+const VOICE_PROFILES={
+classic:{rate:1,pitch:1,text:"Classic JARVIS. Alle Systeme sind einsatzbereit."},
+iron:{rate:.96,pitch:.82,text:"Iron-Modus aktiviert. Anzug und Systeme sind bereit."},
+ultron:{rate:.86,pitch:.65,text:"Ultron ist online. Systemanalyse läuft."},
+hologram:{rate:1.08,pitch:1.22,text:"Hologramm-Projektion stabil. Willkommen zurück."},
+plasma:{rate:1.13,pitch:1.35,text:"Plasmakern aktiviert. Energiefluss stabil."},
+android:{rate:.94,pitch:.9,text:"Android-System bereit. Alle Funktionen arbeiten normal."},
+hulk:{rate:.78,pitch:.55,text:"Hulk-Modus aktiviert. Gamma-Energie ist bereit."}
+};
+
 const DEFAULTS={mode:"classic",color:"gold",background:"black",surface:"normal",visual:"bars",voice:"",speed:1,answer:"normal",fontSize:"14",voiceOn:true,motion:true,sound:true,soundVolume:65,reactor:true,modeVoices:{}};
-function load(key,fallback){try{const value=JSON.parse(localStorage.getItem(key));return value===null?fallback:value}catch{return fallback}}
+
+function load(key,fallback){
+try{const value=JSON.parse(localStorage.getItem(key));return value===null?fallback:value}catch{return fallback}
+}
 function save(key,value){try{localStorage.setItem(key,JSON.stringify(value))}catch(e){console.warn(e)}}
+
 let settings={...DEFAULTS,...load("jarvis_settings_v1",{})};
 if(!MODES[settings.mode])settings.mode="classic";
 if(!COLORS[settings.color])settings.color="gold";
 if(!settings.modeVoices)settings.modeVoices={};
-let history=load("jarvis_conversation_v1",[]),tasks=load("jarvis_tasks_v1",[]);
-if(!Array.isArray(history))history=[];if(!Array.isArray(tasks))tasks=[];
+
+let history=load("jarvis_conversation_v1",[]);
+let tasks=load("jarvis_tasks_v1",[]);
+if(!Array.isArray(history))history=[];
+if(!Array.isArray(tasks))tasks=[];
+
 let voices=[],recognition=null,listening=false,speaking=false,busy=false,batteryManager=null;
 let audioContext=null,masterGain=null;
+
 function persistSettings(){save("jarvis_settings_v1",settings)}
 
-/* SYNTHETISCHES SCI-FI-SOUNDSYSTEM */
+/* SCI-FI SOUND SYSTEM */
 function initAudio(){
- const AC=window.AudioContext||window.webkitAudioContext;
- if(!AC)return false;
- if(!audioContext){
-  audioContext=new AC();
-  masterGain=audioContext.createGain();
-  masterGain.gain.value=(Number(settings.soundVolume)||65)/100;
-  masterGain.connect(audioContext.destination);
- }
- if(audioContext.state==="suspended")audioContext.resume();
- return true;
+const AC=window.AudioContext||window.webkitAudioContext;
+if(!AC)return false;
+if(!audioContext){
+audioContext=new AC();
+masterGain=audioContext.createGain();
+masterGain.gain.value=(Number(settings.soundVolume)||65)/100;
+masterGain.connect(audioContext.destination);
 }
+if(audioContext.state==="suspended")audioContext.resume();
+return true;
+}
+
 function soundTone(freq,start,duration,type="sine",volume=.15,endFreq=null){
- if(!audioContext||!masterGain)return;
- const osc=audioContext.createOscillator(),gain=audioContext.createGain();
- osc.type=type;osc.frequency.setValueAtTime(freq,start);
- if(endFreq)osc.frequency.exponentialRampToValueAtTime(Math.max(1,endFreq),start+duration);
- gain.gain.setValueAtTime(.001,start);
- gain.gain.exponentialRampToValueAtTime(Math.max(.001,volume),start+.025);
- gain.gain.exponentialRampToValueAtTime(.001,start+duration);
- osc.connect(gain);gain.connect(masterGain);
- osc.start(start);osc.stop(start+duration+.03);
+if(!audioContext||!masterGain)return;
+const osc=audioContext.createOscillator(),gain=audioContext.createGain();
+osc.type=type;
+osc.frequency.setValueAtTime(freq,start);
+if(endFreq)osc.frequency.exponentialRampToValueAtTime(Math.max(1,endFreq),start+duration);
+gain.gain.setValueAtTime(.001,start);
+gain.gain.exponentialRampToValueAtTime(Math.max(.001,volume),start+.025);
+gain.gain.exponentialRampToValueAtTime(.001,start+duration);
+osc.connect(gain);gain.connect(masterGain);
+osc.start(start);osc.stop(start+duration+.03);
 }
+
 function soundNoise(start,duration,volume=.05){
- if(!audioContext||!masterGain)return;
- const length=Math.max(1,Math.floor(audioContext.sampleRate*duration));
- const buffer=audioContext.createBuffer(1,length,audioContext.sampleRate);
- const data=buffer.getChannelData(0);
- for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*(1-i/length);
- const source=audioContext.createBufferSource(),filter=audioContext.createBiquadFilter(),gain=audioContext.createGain();
- source.buffer=buffer;filter.type="lowpass";filter.frequency.value=1300;
- gain.gain.setValueAtTime(volume,start);gain.gain.exponentialRampToValueAtTime(.001,start+duration);
- source.connect(filter);filter.connect(gain);gain.connect(masterGain);source.start(start);source.stop(start+duration);
+if(!audioContext||!masterGain)return;
+const length=Math.max(1,Math.floor(audioContext.sampleRate*duration));
+const buffer=audioContext.createBuffer(1,length,audioContext.sampleRate);
+const data=buffer.getChannelData(0);
+for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*(1-i/length);
+const source=audioContext.createBufferSource(),filter=audioContext.createBiquadFilter(),gain=audioContext.createGain();
+source.buffer=buffer;filter.type="lowpass";filter.frequency.value=1300;
+gain.gain.setValueAtTime(volume,start);
+gain.gain.exponentialRampToValueAtTime(.001,start+duration);
+source.connect(filter);filter.connect(gain);gain.connect(masterGain);
+source.start(start);source.stop(start+duration);
 }
+
 function playSound(kind){
- if(!settings.sound||!initAudio())return;
- const t=audioContext.currentTime+.02;
- masterGain.gain.setTargetAtTime((Number(settings.soundVolume)||65)/100,t,.03);
- const mode=settings.mode;
- const seq=(notes,type="sine",vol=.13)=>notes.forEach(([f,delay,dur,end])=>soundTone(f,t+delay,dur,type,vol,end));
- if(kind==="click"){seq([[650,0,.055,850]],"sine",.045);return}
- if(kind==="send"){seq([[480,0,.09,720],[720,.10,.10,980]],"triangle",.09);return}
- if(kind==="receive"){seq([[740,0,.10,980],[980,.12,.16,740]],"sine",.10);return}
- if(kind==="confirm"){seq([[660,0,.09],[880,.10,.16]],"sine",.11);return}
- if(kind==="warning"){seq([[420,0,.18,300],[420,.24,.18,300]],"sawtooth",.08);return}
- if(kind==="test"||kind==="mode"){
-  if(mode==="hulk"){
-   soundNoise(t,.65,.13);
-   seq([[75,0,.4,45],[110,.18,.3,65],[180,.42,.25,90],[65,.7,.5,35]],"sawtooth",.13);
-  }
-  else if(mode==="ultron"){soundNoise(t,.38,.07);seq([[115,0,.35,75],[260,.12,.22,120],[620,.32,.16,300]],"sawtooth",.12)}
-  else if(mode==="iron"){soundNoise(t,.32,.08);seq([[180,0,.20,420],[420,.16,.22,850],[850,.38,.24,520]],"triangle",.13)}
-  else if(mode==="hologram"){seq([[520,0,.12,900],[900,.12,.14,1200],[1200,.28,.18,700]],"sine",.10)}
-  else if(mode==="plasma"){seq([[180,0,.35,650],[650,.18,.24,1300],[1300,.4,.3,420]],"sawtooth",.075)}
-  else if(mode==="android"){seq([[340,0,.12,440],[440,.15,.12,560],[560,.3,.2,440]],"triangle",.09)}
-  else{seq([[440,0,.12,660],[660,.14,.15,880],[880,.32,.22,660]],"sine",.10)}
- }
+if(!settings.sound||!initAudio())return;
+const t=audioContext.currentTime+.02;
+masterGain.gain.setTargetAtTime((Number(settings.soundVolume)||65)/100,t,.03);
+const mode=settings.mode;
+const seq=(notes,type="sine",vol=.13)=>notes.forEach(([f,delay,dur,end])=>soundTone(f,t+delay,dur,type,vol,end));
+
+if(kind==="click"){seq([[650,0,.055,850]],"sine",.045);return}
+if(kind==="send"){seq([[480,0,.09,720],[720,.10,.10,980]],"triangle",.09);return}
+if(kind==="receive"){seq([[740,0,.10,980],[980,.12,.16,740]],"sine",.10);return}
+if(kind==="confirm"){seq([[660,0,.09],[880,.10,.16]],"sine",.11);return}
+if(kind==="warning"){seq([[420,0,.18,300],[420,.24,.18,300]],"sawtooth",.08);return}
+
+if(kind==="test"||kind==="mode"){
+if(mode==="hulk"){
+soundNoise(t,.65,.13);
+seq([[75,0,.4,45],[110,.18,.3,65],[180,.42,.25,90],[65,.7,.5,35]],"sawtooth",.13);
+}else if(mode==="ultron"){
+soundNoise(t,.38,.07);
+seq([[115,0,.35,75],[260,.12,.22,120],[620,.32,.16,300]],"sawtooth",.12);
+}else if(mode==="iron"){
+soundNoise(t,.32,.08);
+seq([[180,0,.20,420],[420,.16,.22,850],[850,.38,.24,520]],"triangle",.13);
+}else if(mode==="hologram"){
+seq([[520,0,.12,900],[900,.12,.14,1200],[1200,.28,.18,700]],"sine",.10);
+}else if(mode==="plasma"){
+seq([[180,0,.35,650],[650,.18,.24,1300],[1300,.4,.3,420]],"sawtooth",.075);
+}else if(mode==="android"){
+seq([[340,0,.12,440],[440,.15,.12,560],[560,.3,.2,440]],"triangle",.09);
+}else{
+seq([[440,0,.12,660],[660,.14,.15,880],[880,.32,.22,660]],"sine",.10);
 }
-function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+}
+}
+
+function escapeHTML(s){
+return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
 function buildVisualizer(){$("visualizer").innerHTML=Array.from({length:43},()=>"<i></i>").join("")}
-function applyVisualizerStyle(){const v=$("visualizer");v.classList.remove("pulse","wave");if(settings.visual==="pulse")v.classList.add("pulse");if(settings.visual==="wave")v.classList.add("wave")}
+function applyVisualizerStyle(){
+const v=$("visualizer");
+v.classList.remove("pulse","wave");
+if(settings.visual==="pulse")v.classList.add("pulse");
+if(settings.visual==="wave")v.classList.add("wave");
+}
+
 function renderModeCards(){
- $("modeGrid").innerHTML=Object.entries(MODES).map(([id,m])=>`<button class="mode-card ${settings.mode===id?"selected":""}" data-mode="${id}" style="--card-color:${m.color};--card-glow:${m.glow}">${settings.mode===id?'<span class="chosen">✓ AKTIV</span>':""}<span class="mode-symbol">${m.symbol}</span><strong>${m.name}</strong><small>${m.description}</small></button>`).join("");
- $("modeGrid").querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>selectMode(b.dataset.mode));
+$("modeGrid").innerHTML=Object.entries(MODES).map(([id,m])=>`
+<button class="mode-card ${settings.mode===id?"selected":""}" data-mode="${id}" style="--card-color:${m.color};--card-glow:${m.glow}">
+${settings.mode===id?'<span class="chosen">✓ AKTIV</span>':""}
+<span class="mode-symbol">${m.symbol}</span><strong>${m.name}</strong><small>${m.description}</small>
+</button>`).join("");
+$("modeGrid").querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>selectMode(b.dataset.mode));
 }
+
 function selectMode(id){
- if(!MODES[id])return;
- settings.mode=id;
- settings.color=id==="classic"?"gold":id==="iron"?"red":id==="ultron"?"red":id==="hologram"?"blue":id==="plasma"?"violet":id==="hulk"?"green":"cyan";
- persistSettings();applySettings();renderModeCards();$("modeBackdrop").classList.remove("open");
- if("speechSynthesis"in window)speechSynthesis.cancel();
- speaking=false;refreshMode();playSound("mode");
+if(!MODES[id])return;
+settings.mode=id;
+settings.color=id==="classic"?"gold":id==="iron"?"red":id==="ultron"?"red":id==="hologram"?"blue":id==="plasma"?"violet":id==="hulk"?"green":"cyan";
+persistSettings();
+applySettings();
+renderModeCards();
+$("modeBackdrop").classList.remove("open");
+if("speechSynthesis"in window)speechSynthesis.cancel();
+speaking=false;
+refreshMode();
+playSound("mode");
 }
-function openModes(){playSound("click");$("modeBackdrop").classList.add("open");renderModeCards()}
+
+function openModes(){playSound("click");$("modeBackdrop").classList.add("open")}
+
 function applySettings(){
- const m=MODES[settings.mode]||MODES.classic;
- document.body.dataset.mode=settings.mode;document.body.dataset.bg=settings.background;
- document.body.classList.toggle("no-motion",!settings.motion);
- document.documentElement.style.setProperty("--accent",m.color);document.documentElement.style.setProperty("--glow",m.glow);
- $("brandTitle").textContent=settings.mode==="hulk"?"H.U.L.K.":settings.mode==="ultron"?"U.L.T.R.O.N.":settings.mode==="iron"?"IRON SYSTEM":settings.mode==="hologram"?"H.O.L.O.":settings.mode==="plasma"?"P.L.A.S.M.A.":settings.mode==="android"?"A.N.D.R.O.I.D.":"J.A.R.V.I.S.";
- $("coreSymbol").textContent=m.symbol;$("eyebrow").textContent=m.name+" · ACTIVE";
- $("activeModeStat").textContent=m.short;$("themeStatus").textContent=m.short;
- $("systemGreeting").textContent=m.greeting;$("systemSub").textContent=m.sub;
- $("reactor").style.display=settings.reactor?"grid":"none";
- document.querySelectorAll(".panel").forEach(p=>{p.style.backdropFilter=settings.surface==="glass"?"blur(14px)":"none";p.style.background=settings.surface==="glass"?"rgba(25,27,36,.72)":"";p.style.padding=settings.surface==="compact"?"12px":""});
- $("voiceToggle").checked=settings.voiceOn;$("motionToggle").checked=settings.motion;$("soundToggle").checked=settings.sound;$("reactorToggle").checked=settings.reactor;
- $("backgroundSelect").value=settings.background;$("surfaceSelect").value=settings.surface;$("visualSelect").value=settings.visual;
- const currentVoice=settings.modeVoices[settings.mode]||{};
- $("speedRange").value=currentVoice.speed??settings.speed;
- $("speedValue").textContent=Number(currentVoice.speed??settings.speed).toFixed(2);
- $("answerStyle").value=settings.answer;$("fontSize").value=settings.fontSize;
- $("soundVolume").value=settings.soundVolume;$("soundVolumeValue").textContent=settings.soundVolume+"%";
- $("motionStatus").textContent=settings.motion?"Aktiv":"Aus";$("voiceStatus").textContent=settings.voiceOn?"Aktiv":"Aus";
- $("soundStatus").textContent=settings.sound?"Aktiv":"Aus";
- $("swatches").innerHTML=Object.entries(COLORS).map(([name,hex])=>`<button class="swatch ${settings.color===name?"selected":""}" data-color="${name}" title="${name}" style="background:${hex}"></button>`).join("");
- $("swatches").querySelectorAll("button").forEach(b=>b.onclick=()=>{settings.color=b.dataset.color;persistSettings();applySettings();playSound("click")});
- document.querySelectorAll(".message").forEach(x=>x.style.fontSize=settings.fontSize+"px");applyVisualizerStyle();
- if(voices.length)loadVoices();
+const m=MODES[settings.mode]||MODES.classic;
+document.body.dataset.mode=settings.mode;
+document.body.dataset.bg=settings.background;
+document.body.classList.toggle("no-motion",!settings.motion);
+
+document.documentElement.style.setProperty("--accent",m.color);
+document.documentElement.style.setProperty("--glow",m.glow);
+
+$("brandTitle").textContent=settings.mode==="hulk"?"H.U.L.K.":settings.mode==="ultron"?"U.L.T.R.O.N.":settings.mode==="iron"?"IRON SYSTEM":settings.mode==="hologram"?"H.O.L.O.":settings.mode==="plasma"?"P.L.A.S.M.A.":settings.mode==="android"?"A.N.D.R.O.I.D.":"J.A.R.V.I.S.";
+$("coreSymbol").textContent=m.symbol;
+$("eyebrow").textContent=m.name+" · ACTIVE";
+$("activeModeStat").textContent=m.short;
+$("themeStatus").textContent=m.short;
+$("systemGreeting").textContent=m.greeting;
+$("systemSub").textContent=m.sub;
+$("reactor").style.display=settings.reactor?"grid":"none";
+
+document.querySelectorAll(".panel").forEach(p=>{
+p.style.backdropFilter=settings.surface==="glass"?"blur(14px)":"none";
+p.style.background=settings.surface==="glass"?"rgba(25,27,36,.72)":"";
+p.style.padding=settings.surface==="compact"?"12px":"";
+});
+
+$("voiceToggle").checked=settings.voiceOn;
+$("motionToggle").checked=settings.motion;
+$("soundToggle").checked=settings.sound;
+$("reactorToggle").checked=settings.reactor;
+$("backgroundSelect").value=settings.background;
+$("surfaceSelect").value=settings.surface;
+$("visualSelect").value=settings.visual;
+$("speedRange").value=settings.speed;
+$("speedValue").textContent=Number(settings.speed).toFixed(2);
+$("answerStyle").value=settings.answer;
+$("fontSize").value=settings.fontSize;
+$("soundVolume").value=settings.soundVolume;
+$("soundVolumeValue").textContent=settings.soundVolume+"%";
+
+$("motionStatus").textContent=settings.motion?"Aktiv":"Aus";
+$("voiceStatus").textContent=settings.voiceOn?"Aktiv":"Aus";
+$("soundStatus").textContent=settings.sound?"Aktiv":"Aus";
+
+$("swatches").innerHTML=Object.entries(COLORS).map(([name,hex])=>`
+<button class="swatch ${settings.color===name?"selected":""}" data-color="${name}" title="${name}" style="background:${hex}"></button>`).join("");
+
+$("swatches").querySelectorAll("button").forEach(b=>b.onclick=()=>{
+settings.color=b.dataset.color;
+document.documentElement.style.setProperty("--accent",COLORS[settings.color]);
+persistSettings();
+applySettings();
+playSound("click");
+});
+
+document.querySelectorAll(".message").forEach(x=>x.style.fontSize=settings.fontSize+"px");
+applyVisualizerStyle();
+if(voices.length)loadVoices();
 }
-function setMode(mode){const v=$("visualizer");v.classList.remove("idle","speaking","listening");v.classList.add(mode);applyVisualizerStyle();const m=MODES[settings.mode];if(mode==="listening"){$("systemGreeting").textContent="ICH HÖRE ZU";$("systemSub").textContent="Sprachbefehl wird empfangen"}else if(mode==="speaking"){$("systemGreeting").textContent=m.name+" SPRICHT";$("systemSub").textContent="Sprachausgabe aktiv"}else{$("systemGreeting").textContent=m.greeting;$("systemSub").textContent=m.sub}}
-function refreshMode(){if(listening)setMode("listening");else if(speaking)setMode("speaking");else setMode("idle")}
-function updateClock(){const n=new Date();$("clock").textContent=n.toLocaleTimeString("de-DE");$("date").textContent=n.toLocaleDateString("de-DE",{weekday:"long",day:"2-digit",month:"long",year:"numeric"})}
-function updateConnection(){const online=navigator.onLine;$("onlineText").textContent=online?"ONLINE":"OFFLINE";$("onlineDot").style.background=online?"#48d69a":"#ff6262";$("connectionText").textContent=online?"Internet verbunden":"Keine Verbindung"}
-function renderBattery(){if(!batteryManager)return;const p=Math.round(batteryManager.level*100);$("batteryText").textContent=p+"%"+(batteryManager.charging?" · Lädt":"");$("batteryFill").style.width=p+"%"}
-async function updateBattery(){if(!("getBattery"in navigator)){$("batteryText").textContent="Nicht unterstützt";return}try{batteryManager=await navigator.getBattery();renderBattery();batteryManager.addEventListener("levelchange",renderBattery);batteryManager.addEventListener("chargingchange",renderBattery)}catch{$("batteryText").textContent="Nicht verfügbar"}}
+
+function setMode(mode){
+const v=$("visualizer");
+v.classList.remove("idle","speaking","listening");
+v.classList.add(mode);
+applyVisualizerStyle();
+const m=MODES[settings.mode];
+if(mode==="listening"){
+$("systemGreeting").textContent="ICH HÖRE ZU";
+$("systemSub").textContent="Sprachbefehl wird empfangen";
+}else if(mode==="speaking"){
+$("systemGreeting").textContent=m.name+" SPRICHT";
+$("systemSub").textContent="Sprachausgabe aktiv";
+}else{
+$("systemGreeting").textContent=m.greeting;
+$("systemSub").textContent=m.sub;
+}
+}
+
+function refreshMode(){
+if(listening)setMode("listening");
+else if(speaking)setMode("speaking");
+else setMode("idle");
+}
+
+function updateClock(){
+const n=new Date();
+$("clock").textContent=n.toLocaleTimeString("de-DE");
+$("date").textContent=n.toLocaleDateString("de-DE",{weekday:"long",day:"2-digit",month:"long",year:"numeric"});
+}
+
+function updateConnection(){
+const online=navigator.onLine;
+$("onlineText").textContent=online?"ONLINE":"OFFLINE";
+$("onlineDot").style.background=online?"#48d69a":"#ff6262";
+$("connectionText").textContent=online?"Internet verbunden":"Keine Verbindung";
+}
+
+function renderBattery(){
+if(!batteryManager)return;
+const p=Math.round(batteryManager.level*100);
+$("batteryText").textContent=p+"%"+(batteryManager.charging?" · Lädt":"");
+$("batteryFill").style.width=p+"%";
+}
+
+async function updateBattery(){
+if(!("getBattery"in navigator)){
+$("batteryText").textContent="Nicht unterstützt";
+return;
+}
+try{
+batteryManager=await navigator.getBattery();
+renderBattery();
+batteryManager.addEventListener("levelchange",renderBattery);
+batteryManager.addEventListener("chargingchange",renderBattery);
+}catch{$("batteryText").textContent="Nicht verfügbar"}
+}
+
 function addMessage(role,text,store=true){
- const d=document.createElement("div");d.className="message "+role;const who=role==="user"?"DU":MODES[settings.mode].short;
- d.innerHTML=`<div class="who">${who}</div>${escapeHTML(text)}`;d.style.fontSize=settings.fontSize+"px";$("chatLog").appendChild(d);$("chatLog").scrollTop=$("chatLog").scrollHeight;
- if(store){history.push({role:role==="user"?"user":"model",content:text});history=history.slice(-12);save("jarvis_conversation_v1",history);$("historyCount").textContent=history.length}
+const d=document.createElement("div");
+d.className="message "+role;
+const who=role==="user"?"DU":MODES[settings.mode].short;
+d.innerHTML=`<div class="who">${who}</div>${escapeHTML(text)}`;
+d.style.fontSize=settings.fontSize+"px";
+$("chatLog").appendChild(d);
+$("chatLog").scrollTop=$("chatLog").scrollHeight;
+if(store){
+history.push({role:role==="user"?"user":"model",content:text});
+history=history.slice(-12);
+save("jarvis_conversation_v1",history);
+$("historyCount").textContent=history.length;
 }
-function renderHistory(){$("chatLog").innerHTML="";if(!history.length)addMessage("jarvis","System bereit. Wie kann ich helfen?",false);else history.forEach(m=>addMessage(m.role==="user"?"user":"jarvis",m.content,false));$("historyCount").textContent=history.length}
+}
+
+function renderHistory(){
+$("chatLog").innerHTML="";
+if(!history.length)addMessage("jarvis","System bereit. Wie kann ich helfen?",false);
+else history.forEach(m=>addMessage(m.role==="user"?"user":"jarvis",m.content,false));
+$("historyCount").textContent=history.length;
+}
+
 function renderTasks(){
- $("taskList").innerHTML="";
- tasks.forEach((t,i)=>{const d=document.createElement("div");d.className="task"+(t.done?" done":"");d.innerHTML=`<input type="checkbox" ${t.done?"checked":""}><span>${escapeHTML(t.text)}</span><button aria-label="Aufgabe löschen">×</button>`;
- d.querySelector("input").onchange=e=>{tasks[i].done=e.target.checked;save("jarvis_tasks_v1",tasks);renderTasks();playSound("confirm")};
- d.querySelector("button").onclick=()=>{tasks.splice(i,1);save("jarvis_tasks_v1",tasks);renderTasks();playSound("click")};$("taskList").appendChild(d)});
- $("openCount").textContent=tasks.filter(t=>!t.done).length;$("doneCount").textContent=tasks.filter(t=>t.done).length;$("taskStatus").textContent=tasks.length;
+$("taskList").innerHTML="";
+tasks.forEach((t,i)=>{
+const d=document.createElement("div");
+d.className="task"+(t.done?" done":"");
+d.innerHTML=`<input type="checkbox" ${t.done?"checked":""}><span>${escapeHTML(t.text)}</span><button aria-label="Aufgabe löschen">×</button>`;
+d.querySelector("input").onchange=e=>{
+tasks[i].done=e.target.checked;
+save("jarvis_tasks_v1",tasks);
+renderTasks();
+playSound("confirm");
+};
+d.querySelector("button").onclick=()=>{
+tasks.splice(i,1);
+save("jarvis_tasks_v1",tasks);
+renderTasks();
+playSound("click");
+};
+$("taskList").appendChild(d);
+});
+$("openCount").textContent=tasks.filter(t=>!t.done).length;
+$("doneCount").textContent=tasks.filter(t=>t.done).length;
+$("taskStatus").textContent=tasks.length;
 }
-function addTask(text){const clean=String(text||"").trim();if(!clean)return;tasks.push({text:clean,done:false});save("jarvis_tasks_v1",tasks);renderTasks();$("taskInput").value="";playSound("confirm")}
+
+function addTask(text){
+const clean=String(text||"").trim();
+if(!clean)return;
+tasks.push({text:clean,done:false});
+save("jarvis_tasks_v1",tasks);
+renderTasks();
+$("taskInput").value="";
+playSound("confirm");
+}
+
+/* SPRACHSTEUERUNG */
 function speak(text){
- if(!settings.voiceOn||!("speechSynthesis"in window))return;
- speechSynthesis.cancel();
- const clean=String(text).replace(/```[\s\S]*?```/g," Codeblock ausgelassen ").replace(/https?:\/\/\S+/g,"").replace(/[*_#`]/g,"").trim();
- const u=new SpeechSynthesisUtterance(clean),mode=settings.mode;
- u.lang="de-DE";
- const saved=settings.modeVoices[mode]||{};
- u.rate=mode==="hulk"?.78:Number(saved.speed??settings.speed)||1;
- u.pitch=mode==="hulk"?.5:mode==="ultron"?.65:mode==="iron"?.9:mode==="android"?.85:mode==="hologram"?1.05:1;
- const selectedName=saved.voice||settings.voice;
- const selected=voices.find(v=>v.name===selectedName);
- const german=voices.find(v=>v.lang.toLowerCase().startsWith("de"));
- if(selected||german)u.voice=selected||german;
- u.onstart=()=>{speaking=true;refreshMode()};
- u.onend=()=>{speaking=false;refreshMode()};
- u.onerror=()=>{speaking=false;refreshMode()};
- speechSynthesis.speak(u);
+if(!settings.voiceOn||!("speechSynthesis"in window))return;
+speechSynthesis.cancel();
+
+const clean=String(text)
+.replace(/```[\s\S]*?```/g," Codeblock ausgelassen ")
+.replace(/https?:\/\/\S+/g,"")
+.replace(/[*_#`]/g,"")
+.replace(/\[([^\]]+)\]\([^)]+\)/g,"$1")
+.trim();
+
+const u=new SpeechSynthesisUtterance(clean);
+const mode=settings.mode;
+const profile=VOICE_PROFILES[mode]||VOICE_PROFILES.classic;
+const saved=settings.modeVoices[mode]||{};
+
+u.lang="de-DE";
+u.rate=Math.max(.65,Math.min(1.5,profile.rate*Number(settings.speed||1)));
+u.pitch=profile.pitch;
+
+const selectedName=saved.voice||settings.voice;
+const selected=voices.find(v=>v.name===selectedName);
+const german=voices.find(v=>v.lang.toLowerCase().startsWith("de"));
+if(selected||german)u.voice=selected||german;
+
+u.onstart=()=>{speaking=true;refreshMode()};
+u.onend=()=>{speaking=false;refreshMode()};
+u.onerror=()=>{speaking=false;refreshMode()};
+speechSynthesis.speak(u);
 }
+
+function testVoice(){
+if(!("speechSynthesis"in window)){
+addMessage("jarvis","Deine Browser-Version unterstützt leider keine Sprachausgabe.");
+return;
+}
+const profile=VOICE_PROFILES[settings.mode];
+speak(profile.text);
+}
+
 function loadVoices(){
- if(!("speechSynthesis"in window))return;
- voices=speechSynthesis.getVoices();
- const german=voices.filter(v=>v.lang.toLowerCase().startsWith("de"));
- $("voiceSelect").innerHTML='<option value="">Automatische deutsche Stimme</option>'+german.map(v=>`<option value="${escapeHTML(v.name)}">${escapeHTML(v.name)}</option>`).join("");
- $("voiceSelect").value=settings.modeVoices[settings.mode]?.voice||settings.voice;
+if(!("speechSynthesis"in window))return;
+voices=speechSynthesis.getVoices();
+const german=voices.filter(v=>v.lang.toLowerCase().startsWith("de"));
+$("voiceSelect").innerHTML='<option value="">Automatische deutsche Stimme</option>'+
+german.map(v=>`<option value="${escapeHTML(v.name)}">${escapeHTML(v.name)}</option>`).join("");
+$("voiceSelect").value=settings.modeVoices[settings.mode]?.voice||settings.voice||"";
 }
-if("speechSynthesis"in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
-function taskCommand(message){const m=message.match(/^(?:jarvis[, ]*)?(?:erstelle eine aufgabe|neue aufgabe|merke dir als aufgabe)\s*:?\s*(.+)$/i);if(!m)return false;addTask(m[1]);addMessage("jarvis","Aufgabe gespeichert: "+m[1]);return true}
+
+if("speechSynthesis"in window){
+loadVoices();
+speechSynthesis.onvoiceschanged=loadVoices;
+}
+
+function taskCommand(message){
+const m=message.match(/^(?:jarvis[, ])?(?:erstelle eine aufgabe|neue aufgabe|merke dir als aufgabe)\s:?\s*(.+)$/i);
+if(!m)return false;
+addTask(m[1]);
+addMessage("jarvis","Aufgabe gespeichert: "+m[1]);
+return true;
+}
+
 async function sendMessage(){
- const input=$("messageInput"),message=input.value.trim();
- if(!message||busy)return;
- input.value="";
- if(taskCommand(message))return;
- addMessage("user",message);playSound("send");
- const m=MODES[settings.mode];
- let prompt=message+"\n\nAktiver Modus: "+m.name+". "+m.tone;
- if(settings.answer==="short")prompt+=" Antworte kurz und direkt.";
- if(settings.answer==="detailed")prompt+=" Erkläre ausführlich und verständlich.";
- busy=true;$("sendButton").disabled=true;
- $("systemGreeting").textContent="VERARBEITE ANFRAGE";$("systemSub").textContent=m.name+" analysiert …";
- try{
-  const response=await fetch("/api/chat",{
-   method:"POST",
-   headers:{"Content-Type":"application/json"},
-   body:JSON.stringify({message:prompt,history:history.slice(0,-1).slice(-12)})
-  });
-  const data=await response.json();
-  if(!response.ok)throw new Error(data.error||"Serverfehler ("+response.status+")");
-  const reply=data.reply||"Ich habe leider keine lesbare Antwort erhalten.";
-  addMessage("jarvis",reply);playSound("receive");speak(reply);
- }catch(e){addMessage("jarvis","Verbindungsfehler: "+e.message);playSound("warning")}
- finally{busy=false;$("sendButton").disabled=false;refreshMode()}
+const input=$("messageInput");
+const message=input.value.trim();
+if(!message||busy)return;
+input.value="";
+if(taskCommand(message))return;
+
+addMessage("user",message);
+playSound("send");
+
+const m=MODES[settings.mode];
+let prompt=message+"\n\nAktiver Modus: "+m.name+". "+m.tone;
+if(settings.answer==="short")prompt+=" Antworte kurz und direkt.";
+if(settings.answer==="detailed")prompt+=" Erkläre ausführlich und verständlich.";
+
+busy=true;
+$("sendButton").disabled=true;
+$("systemGreeting").textContent="VERARBEITE ANFRAGE";
+$("systemSub").textContent=m.name+" analysiert …";
+
+try{
+const response=await fetch("/api/chat",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({message:prompt,history:history.slice(0,-1).slice(-12)})
+});
+const data=await response.json();
+if(!response.ok)throw new Error(data.error||"Serverfehler ("+response.status+")");
+const reply=data.reply||"Ich habe leider keine lesbare Antwort erhalten.";
+addMessage("jarvis",reply);
+playSound("receive");
+speak(reply);
+}catch(e){
+addMessage("jarvis","Verbindungsfehler: "+e.message);
+playSound("warning");
+}finally{
+busy=false;
+$("sendButton").disabled=false;
+refreshMode();
 }
+}
+
 function setupRecognition(){
- const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
- if(!SR){$("micButton").disabled=true;$("micButton").title="Spracherkennung nicht unterstützt";return}
- recognition=new SR();recognition.lang="de-DE";recognition.interimResults=false;recognition.continuous=false;
- recognition.onstart=()=>{listening=true;refreshMode()};
- recognition.onend=()=>{listening=false;refreshMode()};
- recognition.onerror=()=>{listening=false;refreshMode()};
- recognition.onresult=e=>{$("messageInput").value=e.results[0][0].transcript;sendMessage()};
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!SR){
+$("micButton").disabled=true;
+$("micButton").title="Spracherkennung nicht unterstützt";
+return;
 }
+recognition=new SR();
+recognition.lang="de-DE";
+recognition.interimResults=false;
+recognition.continuous=false;
+recognition.onstart=()=>{listening=true;refreshMode()};
+recognition.onend=()=>{listening=false;refreshMode()};
+recognition.onerror=()=>{listening=false;refreshMode()};
+recognition.onresult=e=>{
+$("messageInput").value=e.results[0][0].transcript;
+sendMessage();
+};
+}
+
+/* BUTTONS UND EINSTELLUNGEN */
 $("sendButton").onclick=sendMessage;
 $("messageInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage()});
-$("micButton").onclick=()=>{initAudio();if(!recognition)return;try{if(listening)recognition.stop();else recognition.start()}catch(e){console.warn(e)}};
-$("stopSpeech").onclick=()=>{if("speechSynthesis"in window)speechSynthesis.cancel();speaking=false;refreshMode();playSound("click")};
-$("clearChat").onclick=()=>{if(!confirm("Gesamten Chatverlauf auf diesem Gerät löschen?"))return;history=[];save("jarvis_conversation_v1",history);renderHistory();playSound("click")};
-$("addTask").onclick=()=>$("taskInput").value&&addTask($("taskInput").value);
-$("taskInput").addEventListener("keydown",e=>{if(e.key==="Enter")addTask(e.target.value)});
-$("settingsButton").onclick=()=>{$("settingsPanel").classList.toggle("open");playSound("click")};
-$("closeSettings").onclick=()=>$("settingsPanel").classList.remove("open");
-$("brandButton").onclick=openModes;$("reactor").onclick=openModes;$("changeMode").onclick=openModes;
-$("closeModes").onclick=()=>$("modeBackdrop").classList.remove("open");
-$("modeBackdrop").onclick=e=>{if(e.target===$("modeBackdrop"))$("modeBackdrop").classList.remove("open")};
-document.addEventListener("keydown",e=>{if(e.key==="Escape")$("modeBackdrop").classList.remove("open")});
-$("backgroundSelect").onchange=e=>{settings.background=e.target.value;persistSettings();applySettings();playSound("click")};
-$("surfaceSelect").onchange=e=>{settings.surface=e.target.value;persistSettings();applySettings();playSound("click")};
-$("visualSelect").onchange=e=>{settings.visual=e.target.value;persistSettings();applyVisualizerStyle();playSound("click")};
-$("voiceSelect").onchange=e=>{
- settings.voice=e.target.value;
- settings.modeVoices[settings.mode]={...(settings.modeVoices[settings.mode]||{}),voice:e.target.value};
- persistSettings();
+$("micButton").onclick=()=>{
+initAudio();
+if(!recognition)return;
+try{if(listening)recognition.stop();else recognition.start()}catch(e){console.warn(e)}
 };
-$("speedRange").oninput=e=>{
- settings.speed=e.target.value;
- $("speedValue").textContent=Number(e.target.value).toFixed(2);
- settings.modeVoices[settings.mode]={...(settings.modeVoices[settings.mode]||{}),speed:Number(e.target.value)};
- persistSettings();
+$("stopSpeech").onclick=()=>{
+if("speechSynthesis"in window)speechSynthesis.cancel();
+speaking=false;
+refreshMode();
+playSound("click");
 };
-$("answerStyle").onchange=e=>{settings.answer=e.target.value;persistSettings()};
-$("fontSize").onchange=e=>{settings.fontSize=e.target.value;persistSettings();document.querySelectorAll(".message").forEach(m=>m.style.fontSize=settings.fontSize+"px")};
-$("voiceToggle").onchange=e=>{settings.voiceOn=e.target.checked;persistSettings();applySettings()};
-$("motionToggle").onchange=e=>{settings.motion=e.target.checked;persistSettings();applySettings()};
-$("soundToggle").onchange=e=>{settings.sound=e.target.checked;persistSettings();applySettings();if(settings.sound){initAudio();playSound("test")}};
-$("soundVolume").oninput=e=>{settings.soundVolume=Number(e.target.value);$("soundVolumeValue").textContent=settings.soundVolume+"%";if(masterGain)masterGain.gain.setTargetAtTime(settings.soundVolume/100,audioContext.currentTime,.03);persistSettings()};
-$("testSound").onclick=()=>{initAudio();playSound("test")};
-$("reactorToggle").onchange=e=>{settings.reactor=e.target.checked;persistSettings();applySettings()};
-$("resetSettings").onclick=()=>{
- settings={...DEFAULTS,modeVoices:{}};
- persistSettings();applySettings();refreshMode();loadVoices();playSound("confirm");
+$("testVoice").onclick=()=>{
+if("speechSynthesis"in window)speechSynthesis.cancel();
+speaking=false;
+testVoice();
+};
+$("clearChat").onclick=()=>{
+if(!confirm("Gesamten Chatverlauf auf diesem Gerät löschen?"))return;
+history=[];
+save("jarvis_conversation_v1",history);
+renderHistory();
+playSound("click");
 };
 
-/* AudioContext erst nach echter Nutzerinteraktion starten */
-document.addEventListener("pointerdown",()=>{if(settings.sound)initAudio()},{once:true});
-document.addEventListener("click",e=>{
- const target=e.target.closest("button");
- if(!target||target.id==="sendButton"||target.id==="testSound"||target.id==="closeModes")return;
- if(target.id!=="changeMode"&&target.id!=="settingsButton"&&target.id!=="brandButton"&&target.id!=="reactor"&&target.id!=="soundToggle")playSound("click");
+$("addTask").onclick=()=>$("taskInput").value&&addTask($("taskInput").value);
+$("taskInput").addEventListener("keydown",e=>{if(e.key==="Enter")addTask(e.target.value)});
+
+$("settingsButton").onclick=()=>{
+$("settingsPanel").classList.toggle("open");
+playSound("click");
+};
+$("closeSettings").onclick=()=>$("settingsPanel").classList.remove("open");
+
+$("brandButton").onclick=openModes;
+$("reactor").onclick=openModes;
+$("changeMode").onclick=openModes;
+$("closeModes").onclick=()=>$("modeBackdrop").classList.remove("open");
+$("modeBackdrop").onclick=e=>{
+if(e.target===$("modeBackdrop"))$("modeBackdrop").classList.remove("open");
+};
+document.addEventListener("keydown",e=>{
+if(e.key==="Escape")$("modeBackdrop").classList.remove("open");
 });
+
+$("backgroundSelect").onchange=e=>{
+settings.background=e.target.value;
+persistSettings();applySettings();playSound("click");
+};
+$("surfaceSelect").onchange=e=>{
+settings.surface=e.target.value;
+persistSettings();applySettings();playSound("click");
+};
+$("visualSelect").onchange=e=>{
+settings.visual=e.target.value;
+persistSettings();applyVisualizerStyle();playSound("click");
+};
+
+$("voiceSelect").onchange=e=>{
+settings.voice=e.target.value;
+settings.modeVoices[settings.mode]={...(settings.modeVoices[settings.mode]||{}),voice:e.target.value};
+persistSettings();
+};
+
+$("speedRange").oninput=e=>{
+settings.speed=Number(e.target.value);
+$("speedValue").textContent=settings.speed.toFixed(2);
+persistSettings();
+};
+
+$("answerStyle").onchange=e=>{settings.answer=e.target.value;persistSettings()};
+$("fontSize").onchange=e=>{
+settings.fontSize=e.target.value;
+persistSettings();
+document.querySelectorAll(".message").forEach(m=>m.style.fontSize=settings.fontSize+"px");
+};
+
+$("voiceToggle").onchange=e=>{
+settings.voiceOn=e.target.checked;
+persistSettings();applySettings();
+};
+$("motionToggle").onchange=e=>{
+settings.motion=e.target.checked;
+persistSettings();applySettings();
+};
+$("soundToggle").onchange=e=>{
+settings.sound=e.target.checked;
+persistSettings();applySettings();
+if(settings.sound){initAudio();playSound("test")}
+};
+$("soundVolume").oninput=e=>{
+settings.soundVolume=Number(e.target.value);
+$("soundVolumeValue").textContent=settings.soundVolume+"%";
+if(masterGain)masterGain.gain.setTargetAtTime(settings.soundVolume/100,audioContext.currentTime,.03);
+persistSettings();
+};
+$("testSound").onclick=()=>{
+initAudio();
+playSound("test");
+};
+$("reactorToggle").onchange=e=>{
+settings.reactor=e.target.checked;
+persistSettings();applySettings();
+};
+
+$("resetSettings").onclick=()=>{
+settings={...DEFAULTS,modeVoices:{}};
+persistSettings();
+applySettings();
+refreshMode();
+loadVoices();
+playSound("confirm");
+};
+
+/* AUDIO ERST NACH NUTZERINTERAKTION STARTEN */
+document.addEventListener("pointerdown",()=>{
+if(settings.sound)initAudio();
+},{once:true});
+
+document.addEventListener("click",e=>{
+const target=e.target.closest("button");
+if(!target||target.id==="sendButton"||target.id==="testSound"||target.id==="testVoice"||target.id==="closeModes")return;
+if(target.id!=="changeMode"&&target.id!=="settingsButton"&&target.id!=="brandButton"&&target.id!=="reactor"&&target.id!=="soundToggle")playSound("click");
+});
+
 window.addEventListener("online",updateConnection);
 window.addEventListener("offline",updateConnection);
-window.addEventListener("focus",()=>{updateClock();updateConnection();renderBattery()});
-window.addEventListener("pageshow",()=>{updateClock();updateConnection()});
-document.addEventListener("visibilitychange",()=>{if(!document.hidden){updateClock();updateConnection();renderBattery()}});
-buildVisualizer();applySettings();renderHistory();renderTasks();setupRecognition();
-updateClock();updateConnection();updateBattery();refreshMode();renderModeCards();
-setInterval(updateClock,1000);setInterval(updateConnection,5000);
+window.addEventListener("focus",()=>{
+updateClock();updateConnection();renderBattery();
+});
+window.addEventListener("pageshow",()=>{
+updateClock();updateConnection();
+});
+document.addEventListener("visibilitychange",()=>{
+if(!document.hidden){updateClock();updateConnection();renderBattery()}
+});
+
+/* SYSTEM STARTEN */
+buildVisualizer();
+applySettings();
+renderHistory();
+renderTasks();
+setupRecognition();
+updateClock();
+updateConnection();
+updateBattery();
+refreshMode();
+renderModeCards();
+setInterval(updateClock,1000);
+setInterval(updateConnection,5000);
 </script>
 </body>
 </html>
