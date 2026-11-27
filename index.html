@@ -17,6 +17,9 @@ body[data-mode="hologram"]{--accent:#55baff;--accent2:#c9edff;--glow:rgba(50,160
 body[data-mode="plasma"]{--accent:#b28aff;--accent2:#e8d9ff;--glow:rgba(150,80,255,.3);--panel:rgba(25,15,40,.85);--panel2:rgba(39,23,60,.92);--border:rgba(180,120,255,.2);background:radial-gradient(ellipse at 50% 35%,rgba(130,50,255,.22),transparent 60%),#090710}
 body[data-mode="android"]{--accent:#c6d6e5;--accent2:#fff;--glow:rgba(180,210,240,.25);--panel:rgba(18,25,32,.88);--panel2:rgba(30,40,50,.92);--border:rgba(200,225,255,.2);background:radial-gradient(ellipse at 50% 35%,rgba(170,210,245,.17),transparent 60%),#080b10}
 body[data-mode="classic"]{--accent:#e5b957;--accent2:#fff0bd;--glow:rgba(229,185,87,.3);--panel:rgba(16,19,27,.82);--panel2:rgba(25,29,39,.88);--border:rgba(255,255,255,.09)}
+body[data-mode="hulk"]{--accent:#63f542;--accent2:#d5ffc9;--glow:rgba(70,255,35,.38);--panel:rgba(10,30,12,.9);--panel2:rgba(16,45,19,.94);--border:rgba(90,255,60,.25);background:radial-gradient(ellipse at 50% 35%,rgba(55,255,25,.25),transparent 60%),#030904}
+body[data-mode="hulk"] .core{background:radial-gradient(circle,#fff 0%,#8cff58 25%,#176b19 75%);box-shadow:0 0 35px #65ff35,0 0 100px rgba(70,255,35,.6)}
+body[data-mode="hulk"] .reactor:before{border-width:2px;box-shadow:0 0 18px #63f542}
 body[data-bg="blue"]{background:radial-gradient(ellipse at top,#142945,#07090e 70%)}
 body[data-bg="space"]{background:radial-gradient(ellipse at 20% 0%,#302347,#07090e 70%)}
 body[data-bg="black"]{background:#050608}
@@ -32,6 +35,7 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px;ma
 .icon-btn,.secondary,.primary{border:1px solid var(--border);border-radius:13px;padding:11px 15px;background:var(--panel2);color:var(--text);transition:.2s}
 .icon-btn:hover,.secondary:hover{border-color:var(--accent);box-shadow:0 0 15px var(--glow)}
 .primary{background:linear-gradient(135deg,var(--accent),#987337);color:#111;border:0;font-weight:bold}.primary:disabled{opacity:.5;cursor:wait}
+body[data-mode="hulk"] .primary{background:linear-gradient(135deg,#a4ff75,#35a51c)}
 .panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px;backdrop-filter:blur(16px);box-shadow:0 15px 40px rgba(0,0,0,.2);position:relative;overflow:hidden}
 .hero{display:grid;grid-template-columns:1.35fr .65fr;gap:16px;margin-bottom:16px}
 .hero-main{min-height:365px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
@@ -178,7 +182,8 @@ const MODES={
  ultron:{name:"ULTRON MODE",short:"ULTRON",symbol:"◉",greeting:"ULTRON ONLINE",sub:"Systemüberwachung aktiv",color:"#e64b55",glow:"rgba(255,35,48,.3)",description:"Silbernes KI-Design, rote Energie und tieferer Sprachklang.",tone:"Du bist eine fiktive, kühl und ruhig sprechende KI namens Ultron. Verwende kurze, präzise, leicht dramatische Sätze und trockenen Humor. Bleibe freundlich und hilfreich. Keine Drohungen."},
  hologram:{name:"HOLOGRAM MODE",short:"HOLOGRAM",symbol:"◇",greeting:"HOLOGRAMM AKTIV",sub:"Projektion stabil",color:"#55baff",glow:"rgba(50,160,255,.3)",description:"Blaues Hologramm mit futuristischer Projektion.",tone:"Du bist ein holografischer Hightech-Assistent. Sprich klar, ruhig und futuristisch."},
  plasma:{name:"PLASMA MODE",short:"PLASMA",symbol:"✧",greeting:"PLASMAKERN AKTIV",sub:"Energiefluss stabil",color:"#b28aff",glow:"rgba(150,80,255,.3)",description:"Violetter Plasmakern mit pulsierenden Energieeffekten.",tone:"Du bist ein futuristischer Plasma-KI-Assistent. Sprich dynamisch, positiv und intelligent."},
- android:{name:"ANDROID MODE",short:"ANDROID",symbol:"⬡",greeting:"ANDROID SYSTEM AKTIV",sub:"Alle Systeme bereit",color:"#c6d6e5",glow:"rgba(180,210,240,.25)",description:"Silber-weißes Android-Interface mit cleanem Look.",tone:"Du bist ein präziser Android-Assistent. Sprich sachlich, ruhig und effizient."}
+ android:{name:"ANDROID MODE",short:"ANDROID",symbol:"⬡",greeting:"ANDROID SYSTEM AKTIV",sub:"Alle Systeme bereit",color:"#c6d6e5",glow:"rgba(180,210,240,.25)",description:"Silber-weißes Android-Interface mit cleanem Look.",tone:"Du bist ein präziser Android-Assistent. Sprich sachlich, ruhig und effizient."},
+ hulk:{name:"HULK MODE",short:"HULK",symbol:"💚",greeting:"HULK SYSTEM AKTIV",sub:"GAMMA-ENERGIE STABIL",color:"#63f542",glow:"rgba(70,255,35,.38)",description:"Grüner Gamma-Reaktor mit kraftvoller Stimme.",tone:"Du bist HULK, ein kraftvoller, aber freundlicher KI-Assistent. Sprich in kurzen, direkten und selbstbewussten Sätzen. Verwende gelegentlich humorvolle Hulk-Ausdrücke, aber bleibe verständlich, respektvoll und hilfreich."}
 };
 const DEFAULTS={mode:"classic",color:"gold",background:"black",surface:"normal",visual:"bars",voice:"",speed:1,answer:"normal",fontSize:"14",voiceOn:true,motion:true,sound:true,soundVolume:65,reactor:true,modeVoices:{}};
 function load(key,fallback){try{const value=JSON.parse(localStorage.getItem(key));return value===null?fallback:value}catch{return fallback}}
@@ -240,7 +245,11 @@ function playSound(kind){
  if(kind==="confirm"){seq([[660,0,.09],[880,.10,.16]],"sine",.11);return}
  if(kind==="warning"){seq([[420,0,.18,300],[420,.24,.18,300]],"sawtooth",.08);return}
  if(kind==="test"||kind==="mode"){
-  if(mode==="ultron"){soundNoise(t,.38,.07);seq([[115,0,.35,75],[260,.12,.22,120],[620,.32,.16,300]],"sawtooth",.12)}
+  if(mode==="hulk"){
+   soundNoise(t,.65,.13);
+   seq([[75,0,.4,45],[110,.18,.3,65],[180,.42,.25,90],[65,.7,.5,35]],"sawtooth",.13);
+  }
+  else if(mode==="ultron"){soundNoise(t,.38,.07);seq([[115,0,.35,75],[260,.12,.22,120],[620,.32,.16,300]],"sawtooth",.12)}
   else if(mode==="iron"){soundNoise(t,.32,.08);seq([[180,0,.20,420],[420,.16,.22,850],[850,.38,.24,520]],"triangle",.13)}
   else if(mode==="hologram"){seq([[520,0,.12,900],[900,.12,.14,1200],[1200,.28,.18,700]],"sine",.10)}
   else if(mode==="plasma"){seq([[180,0,.35,650],[650,.18,.24,1300],[1300,.4,.3,420]],"sawtooth",.075)}
@@ -257,7 +266,8 @@ function renderModeCards(){
 }
 function selectMode(id){
  if(!MODES[id])return;
- settings.mode=id;settings.color=id==="classic"?"gold":id==="iron"?"red":id==="ultron"?"red":id==="hologram"?"blue":id==="plasma"?"violet":"cyan";
+ settings.mode=id;
+ settings.color=id==="classic"?"gold":id==="iron"?"red":id==="ultron"?"red":id==="hologram"?"blue":id==="plasma"?"violet":id==="hulk"?"green":"cyan";
  persistSettings();applySettings();renderModeCards();$("modeBackdrop").classList.remove("open");
  if("speechSynthesis"in window)speechSynthesis.cancel();
  speaking=false;refreshMode();playSound("mode");
@@ -268,7 +278,7 @@ function applySettings(){
  document.body.dataset.mode=settings.mode;document.body.dataset.bg=settings.background;
  document.body.classList.toggle("no-motion",!settings.motion);
  document.documentElement.style.setProperty("--accent",m.color);document.documentElement.style.setProperty("--glow",m.glow);
- $("brandTitle").textContent=settings.mode==="ultron"?"U.L.T.R.O.N.":settings.mode==="iron"?"IRON SYSTEM":settings.mode==="hologram"?"H.O.L.O.":settings.mode==="plasma"?"P.L.A.S.M.A.":settings.mode==="android"?"A.N.D.R.O.I.D.":"J.A.R.V.I.S.";
+ $("brandTitle").textContent=settings.mode==="hulk"?"H.U.L.K.":settings.mode==="ultron"?"U.L.T.R.O.N.":settings.mode==="iron"?"IRON SYSTEM":settings.mode==="hologram"?"H.O.L.O.":settings.mode==="plasma"?"P.L.A.S.M.A.":settings.mode==="android"?"A.N.D.R.O.I.D.":"J.A.R.V.I.S.";
  $("coreSymbol").textContent=m.symbol;$("eyebrow").textContent=m.name+" · ACTIVE";
  $("activeModeStat").textContent=m.short;$("themeStatus").textContent=m.short;
  $("systemGreeting").textContent=m.greeting;$("systemSub").textContent=m.sub;
@@ -276,7 +286,9 @@ function applySettings(){
  document.querySelectorAll(".panel").forEach(p=>{p.style.backdropFilter=settings.surface==="glass"?"blur(14px)":"none";p.style.background=settings.surface==="glass"?"rgba(25,27,36,.72)":"";p.style.padding=settings.surface==="compact"?"12px":""});
  $("voiceToggle").checked=settings.voiceOn;$("motionToggle").checked=settings.motion;$("soundToggle").checked=settings.sound;$("reactorToggle").checked=settings.reactor;
  $("backgroundSelect").value=settings.background;$("surfaceSelect").value=settings.surface;$("visualSelect").value=settings.visual;
- $("speedRange").value=settings.speed;$("speedValue").textContent=Number(settings.speed).toFixed(2);
+ const currentVoice=settings.modeVoices[settings.mode]||{};
+ $("speedRange").value=currentVoice.speed??settings.speed;
+ $("speedValue").textContent=Number(currentVoice.speed??settings.speed).toFixed(2);
  $("answerStyle").value=settings.answer;$("fontSize").value=settings.fontSize;
  $("soundVolume").value=settings.soundVolume;$("soundVolumeValue").textContent=settings.soundVolume+"%";
  $("motionStatus").textContent=settings.motion?"Aktiv":"Aus";$("voiceStatus").textContent=settings.voiceOn?"Aktiv":"Aus";
@@ -284,6 +296,7 @@ function applySettings(){
  $("swatches").innerHTML=Object.entries(COLORS).map(([name,hex])=>`<button class="swatch ${settings.color===name?"selected":""}" data-color="${name}" title="${name}" style="background:${hex}"></button>`).join("");
  $("swatches").querySelectorAll("button").forEach(b=>b.onclick=()=>{settings.color=b.dataset.color;persistSettings();applySettings();playSound("click")});
  document.querySelectorAll(".message").forEach(x=>x.style.fontSize=settings.fontSize+"px");applyVisualizerStyle();
+ if(voices.length)loadVoices();
 }
 function setMode(mode){const v=$("visualizer");v.classList.remove("idle","speaking","listening");v.classList.add(mode);applyVisualizerStyle();const m=MODES[settings.mode];if(mode==="listening"){$("systemGreeting").textContent="ICH HÖRE ZU";$("systemSub").textContent="Sprachbefehl wird empfangen"}else if(mode==="speaking"){$("systemGreeting").textContent=m.name+" SPRICHT";$("systemSub").textContent="Sprachausgabe aktiv"}else{$("systemGreeting").textContent=m.greeting;$("systemSub").textContent=m.sub}}
 function refreshMode(){if(listening)setMode("listening");else if(speaking)setMode("speaking");else setMode("idle")}
@@ -307,39 +320,72 @@ function renderTasks(){
 function addTask(text){const clean=String(text||"").trim();if(!clean)return;tasks.push({text:clean,done:false});save("jarvis_tasks_v1",tasks);renderTasks();$("taskInput").value="";playSound("confirm")}
 function speak(text){
  if(!settings.voiceOn||!("speechSynthesis"in window))return;
- speechSynthesis.cancel();const clean=String(text).replace(/```[\s\S]*?```/g," Codeblock ausgelassen ").replace(/https?:\/\/\S+/g,"").replace(/[*_#`]/g,"").trim();
- const u=new SpeechSynthesisUtterance(clean),mode=settings.mode;u.lang="de-DE";
- const savedSpeed=settings.modeVoices[mode]?.speed;u.rate=Number(savedSpeed||settings.speed)||1;
- u.pitch=mode==="ultron"?.65:mode==="iron"?.9:mode==="android"?.85:mode==="hologram"?1.05:1;
- const selectedName=settings.modeVoices[mode]?.voice||settings.voice,selected=voices.find(v=>v.name===selectedName),german=voices.find(v=>v.lang.toLowerCase().startsWith("de"));
+ speechSynthesis.cancel();
+ const clean=String(text).replace(/```[\s\S]*?```/g," Codeblock ausgelassen ").replace(/https?:\/\/\S+/g,"").replace(/[*_#`]/g,"").trim();
+ const u=new SpeechSynthesisUtterance(clean),mode=settings.mode;
+ u.lang="de-DE";
+ const saved=settings.modeVoices[mode]||{};
+ u.rate=mode==="hulk"?.78:Number(saved.speed??settings.speed)||1;
+ u.pitch=mode==="hulk"?.5:mode==="ultron"?.65:mode==="iron"?.9:mode==="android"?.85:mode==="hologram"?1.05:1;
+ const selectedName=saved.voice||settings.voice;
+ const selected=voices.find(v=>v.name===selectedName);
+ const german=voices.find(v=>v.lang.toLowerCase().startsWith("de"));
  if(selected||german)u.voice=selected||german;
- u.onstart=()=>{speaking=true;refreshMode()};u.onend=()=>{speaking=false;refreshMode()};u.onerror=()=>{speaking=false;refreshMode()};speechSynthesis.speak(u);
+ u.onstart=()=>{speaking=true;refreshMode()};
+ u.onend=()=>{speaking=false;refreshMode()};
+ u.onerror=()=>{speaking=false;refreshMode()};
+ speechSynthesis.speak(u);
 }
-function loadVoices(){if(!("speechSynthesis"in window))return;voices=speechSynthesis.getVoices();const german=voices.filter(v=>v.lang.toLowerCase().startsWith("de"));$("voiceSelect").innerHTML='<option value="">Automatische deutsche Stimme</option>'+german.map(v=>`<option value="${escapeHTML(v.name)}">${escapeHTML(v.name)}</option>`).join("");$("voiceSelect").value=settings.modeVoices[settings.mode]?.voice||settings.voice}
+function loadVoices(){
+ if(!("speechSynthesis"in window))return;
+ voices=speechSynthesis.getVoices();
+ const german=voices.filter(v=>v.lang.toLowerCase().startsWith("de"));
+ $("voiceSelect").innerHTML='<option value="">Automatische deutsche Stimme</option>'+german.map(v=>`<option value="${escapeHTML(v.name)}">${escapeHTML(v.name)}</option>`).join("");
+ $("voiceSelect").value=settings.modeVoices[settings.mode]?.voice||settings.voice;
+}
 if("speechSynthesis"in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
 function taskCommand(message){const m=message.match(/^(?:jarvis[, ]*)?(?:erstelle eine aufgabe|neue aufgabe|merke dir als aufgabe)\s*:?\s*(.+)$/i);if(!m)return false;addTask(m[1]);addMessage("jarvis","Aufgabe gespeichert: "+m[1]);return true}
 async function sendMessage(){
- const input=$("messageInput"),message=input.value.trim();if(!message||busy)return;input.value="";if(taskCommand(message))return;
- addMessage("user",message);playSound("send");const m=MODES[settings.mode];let prompt=message+"\n\nAktiver Modus: "+m.name+". "+m.tone;
- if(settings.answer==="short")prompt+=" Antworte kurz und direkt.";if(settings.answer==="detailed")prompt+=" Erkläre ausführlich und verständlich.";
- busy=true;$("sendButton").disabled=true;$("systemGreeting").textContent="VERARBEITE ANFRAGE";$("systemSub").textContent=m.name+" analysiert …";
+ const input=$("messageInput"),message=input.value.trim();
+ if(!message||busy)return;
+ input.value="";
+ if(taskCommand(message))return;
+ addMessage("user",message);playSound("send");
+ const m=MODES[settings.mode];
+ let prompt=message+"\n\nAktiver Modus: "+m.name+". "+m.tone;
+ if(settings.answer==="short")prompt+=" Antworte kurz und direkt.";
+ if(settings.answer==="detailed")prompt+=" Erkläre ausführlich und verständlich.";
+ busy=true;$("sendButton").disabled=true;
+ $("systemGreeting").textContent="VERARBEITE ANFRAGE";$("systemSub").textContent=m.name+" analysiert …";
  try{
-  const response=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:prompt,history:history.slice(0,-1).slice(-12)})});
-  const data=await response.json();if(!response.ok)throw new Error(data.error||"Serverfehler ("+response.status+")");
-  const reply=data.reply||"Ich habe leider keine lesbare Antwort erhalten.";addMessage("jarvis",reply);playSound("receive");speak(reply);
+  const response=await fetch("/api/chat",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({message:prompt,history:history.slice(0,-1).slice(-12)})
+  });
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||"Serverfehler ("+response.status+")");
+  const reply=data.reply||"Ich habe leider keine lesbare Antwort erhalten.";
+  addMessage("jarvis",reply);playSound("receive");speak(reply);
  }catch(e){addMessage("jarvis","Verbindungsfehler: "+e.message);playSound("warning")}
  finally{busy=false;$("sendButton").disabled=false;refreshMode()}
 }
-function setupRecognition(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){$("micButton").disabled=true;$("micButton").title="Spracherkennung nicht unterstützt";return}
+function setupRecognition(){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){$("micButton").disabled=true;$("micButton").title="Spracherkennung nicht unterstützt";return}
  recognition=new SR();recognition.lang="de-DE";recognition.interimResults=false;recognition.continuous=false;
- recognition.onstart=()=>{listening=true;refreshMode()};recognition.onend=()=>{listening=false;refreshMode()};recognition.onerror=()=>{listening=false;refreshMode()};
- recognition.onresult=e=>{$("messageInput").value=e.results[0][0].transcript;sendMessage()}
+ recognition.onstart=()=>{listening=true;refreshMode()};
+ recognition.onend=()=>{listening=false;refreshMode()};
+ recognition.onerror=()=>{listening=false;refreshMode()};
+ recognition.onresult=e=>{$("messageInput").value=e.results[0][0].transcript;sendMessage()};
 }
-$("sendButton").onclick=sendMessage;$("messageInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage()});
+$("sendButton").onclick=sendMessage;
+$("messageInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage()});
 $("micButton").onclick=()=>{initAudio();if(!recognition)return;try{if(listening)recognition.stop();else recognition.start()}catch(e){console.warn(e)}};
 $("stopSpeech").onclick=()=>{if("speechSynthesis"in window)speechSynthesis.cancel();speaking=false;refreshMode();playSound("click")};
 $("clearChat").onclick=()=>{if(!confirm("Gesamten Chatverlauf auf diesem Gerät löschen?"))return;history=[];save("jarvis_conversation_v1",history);renderHistory();playSound("click")};
-$("addTask").onclick=()=>$("taskInput").value&&addTask($("taskInput").value);$("taskInput").addEventListener("keydown",e=>{if(e.key==="Enter")addTask(e.target.value)});
+$("addTask").onclick=()=>$("taskInput").value&&addTask($("taskInput").value);
+$("taskInput").addEventListener("keydown",e=>{if(e.key==="Enter")addTask(e.target.value)});
 $("settingsButton").onclick=()=>{$("settingsPanel").classList.toggle("open");playSound("click")};
 $("closeSettings").onclick=()=>$("settingsPanel").classList.remove("open");
 $("brandButton").onclick=openModes;$("reactor").onclick=openModes;$("changeMode").onclick=openModes;
@@ -349,8 +395,17 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")$("modeBackdrop").cl
 $("backgroundSelect").onchange=e=>{settings.background=e.target.value;persistSettings();applySettings();playSound("click")};
 $("surfaceSelect").onchange=e=>{settings.surface=e.target.value;persistSettings();applySettings();playSound("click")};
 $("visualSelect").onchange=e=>{settings.visual=e.target.value;persistSettings();applyVisualizerStyle();playSound("click")};
-$("voiceSelect").onchange=e=>{settings.voice=e.target.value;settings.modeVoices[settings.mode]={...(settings.modeVoices[settings.mode]||{}),voice:e.target.value};persistSettings()};
-$("speedRange").oninput=e=>{settings.speed=e.target.value;$("speedValue").textContent=Number(e.target.value).toFixed(2);settings.modeVoices[settings.mode]={...(settings.modeVoices[settings.mode]||{}),speed:Number(e.target.value)};persistSettings()};
+$("voiceSelect").onchange=e=>{
+ settings.voice=e.target.value;
+ settings.modeVoices[settings.mode]={...(settings.modeVoices[settings.mode]||{}),voice:e.target.value};
+ persistSettings();
+};
+$("speedRange").oninput=e=>{
+ settings.speed=e.target.value;
+ $("speedValue").textContent=Number(e.target.value).toFixed(2);
+ settings.modeVoices[settings.mode]={...(settings.modeVoices[settings.mode]||{}),speed:Number(e.target.value)};
+ persistSettings();
+};
 $("answerStyle").onchange=e=>{settings.answer=e.target.value;persistSettings()};
 $("fontSize").onchange=e=>{settings.fontSize=e.target.value;persistSettings();document.querySelectorAll(".message").forEach(m=>m.style.fontSize=settings.fontSize+"px")};
 $("voiceToggle").onchange=e=>{settings.voiceOn=e.target.checked;persistSettings();applySettings()};
@@ -359,7 +414,10 @@ $("soundToggle").onchange=e=>{settings.sound=e.target.checked;persistSettings();
 $("soundVolume").oninput=e=>{settings.soundVolume=Number(e.target.value);$("soundVolumeValue").textContent=settings.soundVolume+"%";if(masterGain)masterGain.gain.setTargetAtTime(settings.soundVolume/100,audioContext.currentTime,.03);persistSettings()};
 $("testSound").onclick=()=>{initAudio();playSound("test")};
 $("reactorToggle").onchange=e=>{settings.reactor=e.target.checked;persistSettings();applySettings()};
-$("resetSettings").onclick=()=>{settings={...DEFAULTS};persistSettings();applySettings();refreshMode();loadVoices();playSound("confirm")};
+$("resetSettings").onclick=()=>{
+ settings={...DEFAULTS,modeVoices:{}};
+ persistSettings();applySettings();refreshMode();loadVoices();playSound("confirm");
+};
 
 /* AudioContext erst nach echter Nutzerinteraktion starten */
 document.addEventListener("pointerdown",()=>{if(settings.sound)initAudio()},{once:true});
@@ -368,7 +426,8 @@ document.addEventListener("click",e=>{
  if(!target||target.id==="sendButton"||target.id==="testSound"||target.id==="closeModes")return;
  if(target.id!=="changeMode"&&target.id!=="settingsButton"&&target.id!=="brandButton"&&target.id!=="reactor"&&target.id!=="soundToggle")playSound("click");
 });
-window.addEventListener("online",updateConnection);window.addEventListener("offline",updateConnection);
+window.addEventListener("online",updateConnection);
+window.addEventListener("offline",updateConnection);
 window.addEventListener("focus",()=>{updateClock();updateConnection();renderBattery()});
 window.addEventListener("pageshow",()=>{updateClock();updateConnection()});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){updateClock();updateConnection();renderBattery()}});
