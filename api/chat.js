@@ -9,7 +9,10 @@ Deine Persönlichkeit:
 - Du bist aufmerksam, freundlich, clever und gelegentlich humorvoll.
 - Du antwortest wie ein echter Assistent, nicht wie ein Roboter.
 - Du liest keine Markdown-Sternchen oder Formatierungszeichen vor.
-- Du verwendest Informationen aus dem Gesprächsverlauf.
+- Du verwendest Informationen aus dem gesamten bereitgestellten Gesprächsverlauf.
+- Wenn der Nutzer dir seinen Namen oder eine andere Information nennt, merke sie dir innerhalb des Gesprächs.
+- Wenn der Nutzer später danach fragt, prüfe zuerst den Gesprächsverlauf.
+- Behaupte niemals, dass dir etwas nicht gesagt wurde, wenn es im Verlauf steht.
 
 LIVE-INFORMATIONEN:
 - Wenn aktuelle Rechercheergebnisse bereitgestellt werden, verwende sie.
@@ -39,7 +42,7 @@ function wantsWeather(message) {
 }
 
 function wantsCurrentInfo(message) {
-  return /aktuell|neueste|news|nachrichten|heute|gestern|gestern|diese woche|fußball|fussball|galatasaray|bundesliga|champions league|ergebnis|spielstand|recherchiere|recherche|suche im internet|was ist passiert/i.test(message);
+  return /aktuell|neueste|news|nachrichten|heute|gestern|diese woche|fußball|fussball|galatasaray|bundesliga|champions league|ergebnis|spielstand|recherchiere|recherche|suche im internet|was ist passiert/i.test(message);
 }
 
 function extractCity(message) {
@@ -144,7 +147,7 @@ async function getNews(message) {
 
         const getTag = tag => {
           const found = item.match(
-            new RegExp("<" + tag + ">([\\\\s\\\\S]*?)</" + tag + ">")
+            new RegExp("<" + tag + ">([\\s\\S]*?)</" + tag + ">")
           );
           return found ? cleanText(found[1]) : "";
         };
@@ -259,20 +262,30 @@ module.exports = async function handler(req, res) {
       }
     }
 
+    // GESPRÄCHSVERLAUF: Unterstützt beide Nachrichtenformate.
     const contents = [];
 
     if (Array.isArray(history)) {
       history
         .filter(item =>
-          (item.role === "user" || item.role === "model") &&
-          typeof item.parts?.[0]?.text === "string"
+          item &&
+          (item.role === "user" || item.role === "model")
         )
         .slice(-12)
         .forEach(item => {
-          contents.push({
-            role: item.role,
-            parts: [{ text: item.parts[0].text.slice(0, 4000) }]
-          });
+          const text =
+            typeof item.content === "string"
+              ? item.content
+              : typeof item.parts?.[0]?.text === "string"
+                ? item.parts[0].text
+                : null;
+
+          if (text) {
+            contents.push({
+              role: item.role,
+              parts: [{ text: text.slice(0, 4000) }]
+            });
+          }
         });
     }
 
